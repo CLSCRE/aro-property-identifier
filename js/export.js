@@ -127,9 +127,13 @@ const ExportModule = (() => {
     const score = AROScoring.calculateParcelScore(parcel.raw || parcel);
     const eligibility = AROScoring.getParcelEligibility(parcel.raw || parcel);
 
-    // Compute Deal Score if available
+    // Use pre-computed AI score if available, otherwise compute from parcel data
     let dealScore = 0, dealBand = 'C', dealCommentary = '';
-    if (typeof DealScore !== 'undefined') {
+    if (parcel.aiScore != null) {
+      dealScore = parcel.aiScore;
+      dealBand = parcel.aiBand;
+      dealCommentary = parcel.aiCommentary;
+    } else if (typeof DealScore !== 'undefined') {
       const ds = DealScore.computeAROScore(parcel.raw || parcel);
       dealScore = ds.score;
       dealBand = ds.band;

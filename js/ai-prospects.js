@@ -151,6 +151,12 @@ const AIProspects = (() => {
     if (!scored) return;
     const p = scored.property;
 
+    // Pass AI score so the pipeline uses it instead of the limited parcel scorer
+    const aiBand = scored.score >= 80 ? 'A' : scored.score >= 60 ? 'B' : 'C';
+    const aiCommentary = scored.score >= 80
+      ? 'IC-Ready — strong across all dimensions'
+      : 'Watchlist — viable with right structure or price';
+
     const parcel = {
       address: p.address + ', ' + p.city,
       ain: p.id,
@@ -159,6 +165,9 @@ const AIProspects = (() => {
       sqft: p.buildingSF,
       lat: null,
       lng: null,
+      aiScore: scored.score,
+      aiBand: aiBand,
+      aiCommentary: aiCommentary,
       raw: {
         effectiveyearbuilt: String(p.yearBuilt),
         usedescription: p.useType,
