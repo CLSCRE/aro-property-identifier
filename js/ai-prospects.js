@@ -72,8 +72,12 @@ const AIProspects = (() => {
     };
   }
 
+  const MIN_SCORE = 60; // Only show Strong (60+) and Exceptional (80+) deals
+
   function rankAll() {
-    rankedProperties = allProperties.map(p => scoreProperty(p));
+    rankedProperties = allProperties
+      .map(p => scoreProperty(p))
+      .filter(s => s.score >= MIN_SCORE);
     rankedProperties.sort((a, b) => b.score - a.score);
   }
 
