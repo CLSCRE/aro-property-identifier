@@ -439,63 +439,63 @@ const ExportModule = (() => {
       return;
     }
 
-    // Table view
-    const sortIcon = (field) => {
-      if (sortField !== field) return '';
-      return sortDir === 'desc' ? ' \u25BC' : ' \u25B2';
-    };
+    // Card view (CoStar / Crexi style)
+    let html = '<div class="pipeline-sort-bar">';
+    html += '<span class="pipeline-sort-label">Sort by:</span>';
+    ['address', 'dealScore', 'yearBuilt', 'sqft'].forEach(field => {
+      const labels = { address: 'Address', dealScore: 'Score', yearBuilt: 'Year', sqft: 'SF' };
+      const arrow = sortField === field ? (sortDir === 'desc' ? ' \u25BC' : ' \u25B2') : '';
+      const cls = sortField === field ? ' active' : '';
+      html += `<button class="pipeline-sort-btn${cls}" onclick="ExportModule.sortPipeline('${field}')">${labels[field]}${arrow}</button>`;
+    });
+    html += '</div>';
 
-    let html = `<div class="pipeline-table-wrap"><table class="pipeline-table">
-      <colgroup>
-        <col class="col-address"><col class="col-score"><col class="col-stage"><col class="col-use">
-        <col class="col-year"><col class="col-sf"><col class="col-elig"><col class="col-fit">
-        <col class="col-timeline"><col class="col-nba"><col class="col-rank"><col class="col-actions">
-      </colgroup>
-      <thead>
-        <tr>
-          <th class="sortable" onclick="ExportModule.sortPipeline('address')">Address${sortIcon('address')}</th>
-          <th class="sortable" onclick="ExportModule.sortPipeline('dealScore')">Score${sortIcon('dealScore')}</th>
-          <th>Stage</th>
-          <th class="sortable" onclick="ExportModule.sortPipeline('useDescription')">Use${sortIcon('useDescription')}</th>
-          <th class="sortable" onclick="ExportModule.sortPipeline('yearBuilt')">Yr${sortIcon('yearBuilt')}</th>
-          <th class="sortable" onclick="ExportModule.sortPipeline('sqft')">SF${sortIcon('sqft')}</th>
-          <th>Elig</th>
-          <th>Fit</th>
-          <th>Time</th>
-          <th>NBA</th>
-          <th>Rank</th>
-          <th></th>
-        </tr>
-      </thead>
-      <tbody>`;
+    html += '<div class="pipeline-card-grid">';
 
-    displayed.forEach((p, i) => {
+    displayed.forEach((p) => {
       const origIdx = prospectingList.indexOf(p);
       const bc = typeof DealScore !== 'undefined' ? DealScore.bandColor(p.dealBand) : 'conditional';
       const stage = p.stage || 'New';
       const stageColor = STAGE_COLORS[stage] || 'var(--mid)';
+      const sfDisplay = p.sqft ? parseInt(p.sqft).toLocaleString() + ' SF' : '\u2014';
+      const fitHtml = renderFitCell(p);
+      const timeHtml = renderTimelineCell(p);
+      const nbaHtml = renderNBACell(p);
+      const rankHtml = renderRankCell(p);
 
-      html += `<tr class="pipeline-row" onclick="DealSnapshot.openFromPipeline(ExportModule.getProspectingList()[${origIdx}])">
-        <td class="pipeline-address">${p.address}</td>
-        <td><span class="pipeline-score-badge ${bc}">${p.dealScore}<span class="pipeline-band">${p.dealBand}</span></span></td>
-        <td><select class="stage-pill" style="color:${stageColor};border-color:${stageColor};" onclick="event.stopPropagation();" onchange="ExportModule.setDealStage(${origIdx}, this.value)">
-          ${STAGES.map(s => `<option value="${s}" ${s === stage ? 'selected' : ''}>${s}</option>`).join('')}
-        </select></td>
-        <td class="pipeline-use">${p.useDescription || '\u2014'}</td>
-        <td>${p.yearBuilt || '\u2014'}</td>
-        <td>${p.sqft ? parseInt(p.sqft).toLocaleString() : '\u2014'}</td>
-        <td><span class="chip ${p.eligibility}">${p.eligibility}</span></td>
-        <td>${renderFitCell(p)}</td>
-        <td>${renderTimelineCell(p)}</td>
-        <td>${renderNBACell(p)}</td>
-        <td>${renderRankCell(p)}</td>
-        <td class="pipeline-actions">
-          <button class="btn-sm" onclick="event.stopPropagation();ExportModule.removeFromProspectingList(${origIdx})" title="Remove">\u00D7</button>
-        </td>
-      </tr>`;
+      html += `
+      <div class="pipeline-card" onclick="DealSnapshot.openFromPipeline(ExportModule.getProspectingList()[${origIdx}])">
+        <div class="pipeline-card-top">
+          <div class="pipeline-card-score">
+            <span class="pipeline-score-badge ${bc}">${p.dealScore}<span class="pipeline-band">${p.dealBand}</span></span>
+          </div>
+          <div class="pipeline-card-actions">
+            <select class="stage-pill" style="color:${stageColor};border-color:${stageColor};" onclick="event.stopPropagation();" onchange="ExportModule.setDealStage(${origIdx}, this.value)">
+              ${STAGES.map(s => `<option value="${s}" ${s === stage ? 'selected' : ''}>${s}</option>`).join('')}
+            </select>
+            <button class="btn-sm" onclick="event.stopPropagation();ExportModule.removeFromProspectingList(${origIdx})" title="Remove">\u00D7</button>
+          </div>
+        </div>
+
+        <h3 class="pipeline-card-address">${p.address}</h3>
+
+        <div class="pipeline-card-details">
+          <div class="pipeline-card-detail"><span class="detail-label">Use</span><span class="detail-value">${p.useDescription || '\u2014'}</span></div>
+          <div class="pipeline-card-detail"><span class="detail-label">Year</span><span class="detail-value">${p.yearBuilt || '\u2014'}</span></div>
+          <div class="pipeline-card-detail"><span class="detail-label">Size</span><span class="detail-value">${sfDisplay}</span></div>
+          <div class="pipeline-card-detail"><span class="detail-label">Eligibility</span><span class="detail-value"><span class="chip ${p.eligibility}">${p.eligibility}</span></span></div>
+        </div>
+
+        <div class="pipeline-card-metrics">
+          <div class="pipeline-card-metric"><span class="metric-label">Fit</span><span class="metric-value">${fitHtml}</span></div>
+          <div class="pipeline-card-metric"><span class="metric-label">Timeline</span><span class="metric-value">${timeHtml}</span></div>
+          <div class="pipeline-card-metric"><span class="metric-label">NBA</span><span class="metric-value">${nbaHtml}</span></div>
+          <div class="pipeline-card-metric"><span class="metric-label">Rank</span><span class="metric-value">${rankHtml}</span></div>
+        </div>
+      </div>`;
     });
 
-    html += `</tbody></table></div>`;
+    html += '</div>';
 
     if (displayed.length < prospectingList.length) {
       html += `<div style="font-size:0.78rem;color:var(--mid);text-align:center;margin-top:8px;">Showing ${displayed.length} of ${prospectingList.length} properties (filters active)</div>`;

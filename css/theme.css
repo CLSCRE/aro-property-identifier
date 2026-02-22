@@ -639,9 +639,9 @@ code, .mono {
 
 /* Prospecting List Panel */
 .prospecting-panel {
-  max-width: 1200px;
+  max-width: 1100px;
   margin: 0 auto;
-  padding: 24px 28px;
+  padding: 28px 32px;
 }
 
 .prospect-item {
@@ -684,8 +684,8 @@ code, .mono {
 
 .chip {
   font-family: 'DM Mono', monospace;
-  font-size: 0.6rem;
-  padding: 1px 6px;
+  font-size: 0.72rem;
+  padding: 3px 10px;
   border-radius: 10px;
   letter-spacing: 0.04em;
   text-transform: uppercase;
@@ -941,7 +941,7 @@ code, .mono {
   }
 }
 
-/* ═══ DEAL PIPELINE TABLE ═══ */
+/* ═══ DEAL PIPELINE — CARD LAYOUT ═══ */
 .pipeline-filters {
   display: flex;
   gap: 8px;
@@ -951,11 +951,11 @@ code, .mono {
 
 .pipeline-filter-btn {
   font-family: 'DM Mono', monospace;
-  font-size: 0.72rem;
+  font-size: 0.75rem;
   font-weight: 600;
   letter-spacing: 0.04em;
-  padding: 6px 14px;
-  border: 1px solid rgba(13,13,13,0.15);
+  padding: 7px 16px;
+  border: 1px solid var(--rule);
   border-radius: 6px;
   background: transparent;
   color: var(--slate);
@@ -968,7 +968,7 @@ code, .mono {
 }
 .pipeline-filter-btn.active {
   background: var(--gold);
-  color: var(--paper);
+  color: #ffffff;
   border-color: var(--gold);
 }
 .pipeline-filter-btn.outline {
@@ -976,70 +976,137 @@ code, .mono {
   border-style: dashed;
 }
 
-.pipeline-table {
-  width: 100%;
-  border-collapse: collapse;
-  font-size: 0.78rem;
+/* Sort bar */
+.pipeline-sort-bar {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  margin-bottom: 16px;
 }
-
-.pipeline-table thead th {
-  font-family: 'DM Mono', monospace;
-  font-size: 0.65rem;
-  letter-spacing: 0.06em;
-  text-transform: uppercase;
+.pipeline-sort-label {
+  font-size: 0.8rem;
   color: var(--mid);
-  text-align: left;
-  padding: 7px 6px;
-  border-bottom: 2px solid rgba(13,13,13,0.1);
-  white-space: nowrap;
+  margin-right: 4px;
 }
-
-.pipeline-table th.sortable {
+.pipeline-sort-btn {
+  font-family: 'DM Mono', monospace;
+  font-size: 0.72rem;
+  font-weight: 500;
+  padding: 4px 10px;
+  border: 1px solid var(--rule);
+  border-radius: 4px;
+  background: transparent;
+  color: var(--mid);
   cursor: pointer;
-  user-select: none;
+  transition: var(--transition);
 }
-.pipeline-table th.sortable:hover {
-  color: var(--gold);
+.pipeline-sort-btn:hover { color: var(--gold); border-color: var(--gold); }
+.pipeline-sort-btn.active { background: var(--gold); color: #ffffff; border-color: var(--gold); }
+
+/* Card grid */
+.pipeline-card-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+  gap: 16px;
 }
 
-.pipeline-row {
+.pipeline-card {
+  background: #ffffff;
+  border: 1px solid var(--rule);
+  border-radius: 10px;
+  padding: 18px 20px;
   cursor: pointer;
-  transition: background 0.15s ease;
+  transition: box-shadow 0.2s ease, transform 0.15s ease;
+  position: relative;
 }
-.pipeline-row:hover {
-  background: rgba(184,150,12,0.06);
-}
-
-.pipeline-table td {
-  padding: 6px 6px;
-  border-bottom: 1px solid rgba(13,13,13,0.06);
-  vertical-align: middle;
+.pipeline-card:hover {
+  box-shadow: 0 4px 16px rgba(0,0,0,0.1);
+  transform: translateY(-2px);
 }
 
-.pipeline-address {
+.pipeline-card-top {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 10px;
+}
+.pipeline-card-actions {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.pipeline-card-address {
+  font-size: 1rem;
+  font-weight: 700;
+  color: var(--ink);
+  margin: 0 0 12px 0;
+  line-height: 1.3;
+}
+
+.pipeline-card-details {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 8px 16px;
+  margin-bottom: 14px;
+  padding-bottom: 14px;
+  border-bottom: 1px solid var(--rule);
+}
+.pipeline-card-detail {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+.detail-label {
+  font-family: 'DM Mono', monospace;
+  font-size: 0.68rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: var(--mid);
+}
+.detail-value {
+  font-size: 0.88rem;
+  font-weight: 500;
+  color: var(--ink);
+}
+
+.pipeline-card-metrics {
+  display: flex;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+.pipeline-card-metric {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 2px;
+  min-width: 48px;
+}
+.metric-label {
+  font-family: 'DM Mono', monospace;
+  font-size: 0.62rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  color: var(--mid);
+}
+.metric-value {
+  font-size: 0.82rem;
   font-weight: 600;
   color: var(--ink);
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
 }
 
-.pipeline-use {
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  color: var(--slate);
-}
-
+/* Score badge (shared by cards + kanban) */
 .pipeline-score-badge {
   display: inline-flex;
   align-items: center;
-  gap: 2px;
+  gap: 3px;
   font-family: 'DM Mono', monospace;
-  font-size: 0.72rem;
+  font-size: 0.82rem;
   font-weight: 700;
-  padding: 2px 6px;
-  border-radius: 4px;
+  padding: 3px 10px;
+  border-radius: 6px;
 }
 .pipeline-score-badge.eligible {
   background: var(--eligible-bg);
@@ -1054,13 +1121,14 @@ code, .mono {
   color: var(--ineligible);
 }
 .pipeline-band {
-  font-size: 0.65rem;
+  font-size: 0.68rem;
   opacity: 0.7;
 }
 
-.pipeline-actions .btn-sm {
+/* Remove button */
+.btn-sm {
   background: none;
-  border: 1px solid rgba(13,13,13,0.12);
+  border: 1px solid var(--rule);
   border-radius: 4px;
   padding: 2px 8px;
   font-size: 0.9rem;
@@ -1068,18 +1136,18 @@ code, .mono {
   color: var(--mid);
   transition: var(--transition);
 }
-.pipeline-actions .btn-sm:hover {
+.btn-sm:hover {
   background: var(--ineligible-bg);
   color: var(--ineligible);
   border-color: var(--ineligible);
 }
 
 @media (max-width: 700px) {
-  .pipeline-table {
-    font-size: 0.7rem;
+  .pipeline-card-grid {
+    grid-template-columns: 1fr;
   }
-  .pipeline-table td, .pipeline-table th {
-    padding: 5px 4px;
+  .pipeline-card-details {
+    grid-template-columns: 1fr 1fr;
   }
 }
 
@@ -1310,27 +1378,27 @@ code, .mono {
 
 .kpi-card {
   background: white;
-  border-radius: var(--radius-md);
-  padding: 18px 16px;
+  border-radius: 10px;
+  padding: 20px 18px;
   text-align: center;
-  box-shadow: var(--shadow-sm);
+  border: 1px solid var(--rule);
   border-top: 3px solid var(--gold);
 }
 
 .kpi-value {
   font-family: 'Playfair Display', serif;
-  font-size: 1.6rem;
+  font-size: 1.8rem;
   font-weight: 800;
   color: var(--ink);
 }
 
 .kpi-label {
   font-family: 'DM Mono', monospace;
-  font-size: 0.65rem;
+  font-size: 0.72rem;
   letter-spacing: 0.06em;
   text-transform: uppercase;
   color: var(--mid);
-  margin-top: 4px;
+  margin-top: 6px;
 }
 
 @media (max-width: 700px) {
@@ -1374,10 +1442,10 @@ code, .mono {
 /* ═══ STAGE PILL (inline dropdown) ═══ */
 .stage-pill {
   font-family: 'DM Mono', monospace;
-  font-size: 0.62rem;
+  font-size: 0.72rem;
   font-weight: 600;
   letter-spacing: 0.04em;
-  padding: 2px 6px;
+  padding: 4px 10px;
   border: 1px solid;
   border-radius: 10px;
   background: transparent;
@@ -1834,24 +1902,7 @@ code, .mono {
   .section-header { font-size: 9px; }
 }
 
-/* ─── Phase 7: Pipeline table — compact 12-col layout ─── */
-.pipeline-table-wrap { overflow-x: auto; -webkit-overflow-scrolling: touch; border-radius: 8px; border: 1px solid var(--rule); background: #ffffff; }
-.pipeline-table { table-layout: fixed; width: 100%; background: #ffffff; border-radius: 0; border: none; overflow: hidden; }
-.pipeline-table th { font-size: 0.7rem; padding: 7px 6px; background: var(--cream); color: var(--slate); font-weight: 600; border-bottom: 2px solid var(--rule); white-space: nowrap; }
-.pipeline-table td { font-size: 0.78rem; padding: 6px 6px; border-bottom: 1px solid var(--rule); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-/* Column widths — 12 cols */
-.pipeline-table .col-address { width: 22%; }
-.pipeline-table .col-score   { width: 9%; }
-.pipeline-table .col-stage   { width: 9%; }
-.pipeline-table .col-use     { width: 10%; }
-.pipeline-table .col-year    { width: 5%; }
-.pipeline-table .col-sf      { width: 7%; }
-.pipeline-table .col-elig    { width: 9%; }
-.pipeline-table .col-fit     { width: 6%; }
-.pipeline-table .col-timeline{ width: 7%; }
-.pipeline-table .col-nba     { width: 5%; }
-.pipeline-table .col-rank    { width: 6%; }
-.pipeline-table .col-actions { width: 5%; }
+/* ─── Phase 7: Pipeline extras ─── */
 .nba-icon { cursor: help; }
 .nba-icon:hover { transform: scale(1.2); }
 
