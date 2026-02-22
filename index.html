@@ -15,15 +15,226 @@
   <link rel="stylesheet" href="css/map.css">
   <link rel="stylesheet" href="css/tab3.css">
   <link rel="stylesheet" href="css/ai-prospects.css">
+
+  <!-- Google Fonts for splash page -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
+
+  <style>
+    /* ═══ SPLASH / LOGIN GATE ═══ */
+    .splash-gate {
+      position: fixed;
+      inset: 0;
+      z-index: 99999;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: linear-gradient(135deg, #0D2B47 0%, #153D63 40%, #006A4E 100%);
+      overflow: hidden;
+    }
+    .splash-gate::before {
+      content: '';
+      position: absolute;
+      top: -20%;
+      right: -10%;
+      width: 600px;
+      height: 600px;
+      background: radial-gradient(circle, rgba(0,166,118,0.12) 0%, transparent 70%);
+      border-radius: 50%;
+    }
+    .splash-gate::after {
+      content: '';
+      position: absolute;
+      bottom: -15%;
+      left: -5%;
+      width: 400px;
+      height: 400px;
+      background: radial-gradient(circle, rgba(197,163,85,0.08) 0%, transparent 70%);
+      border-radius: 50%;
+    }
+    .splash-card {
+      position: relative;
+      z-index: 1;
+      background: rgba(255,255,255,0.97);
+      border-radius: 16px;
+      padding: 48px 44px 40px;
+      max-width: 420px;
+      width: 90%;
+      box-shadow: 0 25px 60px rgba(0,0,0,0.3), 0 0 0 1px rgba(255,255,255,0.1);
+      text-align: center;
+    }
+    .splash-logo {
+      width: 90px;
+      height: auto;
+      margin-bottom: 20px;
+    }
+    .splash-brand {
+      font-family: 'DM Serif Display', Georgia, serif;
+      font-size: 1.5rem;
+      color: #153D63;
+      margin-bottom: 4px;
+      line-height: 1.3;
+    }
+    .splash-product {
+      font-family: 'Inter', sans-serif;
+      font-size: 0.82rem;
+      color: #006A4E;
+      font-weight: 500;
+      letter-spacing: 0.04em;
+      margin-bottom: 6px;
+    }
+    .splash-tagline {
+      font-family: 'Inter', sans-serif;
+      font-size: 0.75rem;
+      color: #6B7280;
+      font-weight: 400;
+      font-style: italic;
+      margin-bottom: 28px;
+    }
+    .splash-divider {
+      width: 48px;
+      height: 2px;
+      background: linear-gradient(90deg, #006A4E, #C5A355);
+      margin: 0 auto 28px;
+      border-radius: 2px;
+    }
+    .splash-input-group {
+      position: relative;
+      margin-bottom: 16px;
+    }
+    .splash-input {
+      width: 100%;
+      padding: 14px 46px 14px 16px;
+      font-family: 'Inter', sans-serif;
+      font-size: 0.92rem;
+      border: 2px solid #E5E7EB;
+      border-radius: 10px;
+      background: #F9FAFB;
+      color: #111827;
+      outline: none;
+      transition: border-color 0.2s, box-shadow 0.2s;
+    }
+    .splash-input:focus {
+      border-color: #006A4E;
+      box-shadow: 0 0 0 3px rgba(0,106,78,0.1);
+      background: #fff;
+    }
+    .splash-input::placeholder {
+      color: #9CA3AF;
+    }
+    .splash-toggle-pw {
+      position: absolute;
+      right: 12px;
+      top: 50%;
+      transform: translateY(-50%);
+      background: none;
+      border: none;
+      cursor: pointer;
+      color: #6B7280;
+      font-size: 1.1rem;
+      padding: 4px;
+      line-height: 1;
+    }
+    .splash-toggle-pw:hover {
+      color: #153D63;
+    }
+    .splash-btn {
+      width: 100%;
+      padding: 14px;
+      font-family: 'Inter', sans-serif;
+      font-size: 0.95rem;
+      font-weight: 600;
+      color: #fff;
+      background: linear-gradient(135deg, #153D63 0%, #006A4E 100%);
+      border: none;
+      border-radius: 10px;
+      cursor: pointer;
+      transition: opacity 0.2s, transform 0.1s;
+      letter-spacing: 0.02em;
+    }
+    .splash-btn:hover {
+      opacity: 0.92;
+    }
+    .splash-btn:active {
+      transform: scale(0.98);
+    }
+    .splash-error {
+      font-family: 'Inter', sans-serif;
+      font-size: 0.8rem;
+      color: #dc2626;
+      margin-top: 12px;
+      display: none;
+    }
+    .splash-footer {
+      margin-top: 28px;
+      font-family: 'Inter', sans-serif;
+      font-size: 0.7rem;
+      color: #9CA3AF;
+      line-height: 1.5;
+    }
+    .splash-footer a {
+      color: #006A4E;
+      text-decoration: none;
+    }
+    .splash-footer a:hover {
+      text-decoration: underline;
+    }
+    .splash-gate.hidden {
+      display: none;
+    }
+    .app-wrapper.locked {
+      display: none;
+    }
+
+    /* Shake animation for wrong password */
+    @keyframes shake {
+      0%, 100% { transform: translateX(0); }
+      20% { transform: translateX(-8px); }
+      40% { transform: translateX(8px); }
+      60% { transform: translateX(-6px); }
+      80% { transform: translateX(4px); }
+    }
+    .splash-input.shake {
+      animation: shake 0.4s ease;
+      border-color: #dc2626;
+    }
+  </style>
 </head>
 <body>
+
+  <!-- ═══ SPLASH LOGIN GATE ═══ -->
+  <div class="splash-gate" id="splash-gate">
+    <div class="splash-card">
+      <img src="https://commerciallendingsolutions.ai/images/cls-logo-emblem.png" alt="Commercial Lending Solutions" class="splash-logo">
+      <div class="splash-brand">Commercial Lending Solutions</div>
+      <div class="splash-product">LA Adaptive Reuse Identifier</div>
+      <div class="splash-tagline">Your Capital. Our Relationships. Every Deal.</div>
+      <div class="splash-divider"></div>
+      <form id="splash-form" onsubmit="return splashLogin(event)">
+        <div class="splash-input-group">
+          <input type="password" id="splash-password" class="splash-input" placeholder="Enter access code" autocomplete="off" autofocus>
+          <button type="button" class="splash-toggle-pw" onclick="toggleSplashPw()" title="Show/hide password">&#x1F441;</button>
+        </div>
+        <button type="submit" class="splash-btn">Enter</button>
+      </form>
+      <div class="splash-error" id="splash-error">Incorrect access code. Please try again.</div>
+      <div class="splash-footer">
+        &copy; 2026 Commercial Lending Solutions<br>
+        <a href="https://commerciallendingsolutions.ai" target="_blank" rel="noopener">commerciallendingsolutions.ai</a>
+      </div>
+    </div>
+  </div>
+
+  <!-- ═══ APP WRAPPER (hidden until authenticated) ═══ -->
+  <div class="app-wrapper locked" id="app-wrapper">
 
   <!-- ═══ HEADER ═══ -->
   <header class="app-header">
     <div class="header-top">
       <div class="brand">
         <h1><span>Commercial Lending Solutions</span> — LA Adaptive Reuse Identifier</h1>
-        <span class="subtitle">Commercial Mortgage Brokerage</span>
+        <span class="subtitle">Your Capital. Our Relationships. Every Deal.</span>
       </div>
       <div style="display:flex;align-items:center;gap:10px;">
         <span class="aro-date">ARO Effective Feb 1, 2026</span>
@@ -36,8 +247,8 @@
       <button onclick="DemoMode.exit()" style="background:none;border:1px solid rgba(122,79,0,0.4);border-radius:6px;padding:2px 10px;font-size:0.78rem;color:var(--conditional);cursor:pointer;margin-left:12px;">Exit Demo Mode &times;</button>
     </div>
     <nav class="tab-nav">
-      <button class="tab-btn active" data-tab="screener" onclick="switchTab('screener')">Single Property Screener</button>
-      <button class="tab-btn" data-tab="map" onclick="switchTab('map')">Map Screener</button>
+      <button class="tab-btn" data-tab="screener" onclick="switchTab('screener')">Single Property Screener</button>
+      <button class="tab-btn active" data-tab="map" onclick="switchTab('map')">Map Screener</button>
       <button class="tab-btn" data-tab="feasibility" onclick="switchTab('feasibility')">Conversion Feasibility</button>
       <button class="tab-btn" data-tab="prospecting" onclick="switchTab('prospecting')">Deal Pipeline <span class="badge" id="prospect-count">0</span></button>
     </nav>
@@ -60,7 +271,7 @@
   </div>
 
   <!-- ═══ TAB 1: SINGLE PROPERTY SCREENER ═══ -->
-  <div id="tab-screener" class="tab-content active">
+  <div id="tab-screener" class="tab-content">
     <div class="screener-layout">
 
       <!-- Left: Form Panel -->
@@ -230,7 +441,7 @@
   </div>
 
   <!-- ═══ TAB 2: MAP SCREENER ═══ -->
-  <div id="tab-map" class="tab-content">
+  <div id="tab-map" class="tab-content active">
     <div class="map-layout">
 
       <!-- Left: Filter Panel -->
@@ -1068,6 +1279,8 @@
     <div class="spinner"></div>
   </div>
 
+  </div><!-- /.app-wrapper -->
+
   <!-- ═══ SCRIPTS ═══ -->
   <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
   <script src="https://unpkg.com/leaflet.markercluster@1.5.3/dist/leaflet.markercluster.js"></script>
@@ -1417,10 +1630,47 @@
       if (box) box.classList.remove('visible');
     });
 
+    // ─── Splash Login Gate ───
+    const SPLASH_KEY = 'cls_aro_auth';
+    const SPLASH_HASH = 'a3f2c8e1'; // simple fingerprint
+
+    function splashLogin(e) {
+      e.preventDefault();
+      const input = document.getElementById('splash-password');
+      const pw = input.value;
+
+      if (pw === 'Clscre@123456') {
+        localStorage.setItem(SPLASH_KEY, SPLASH_HASH);
+        unlockApp();
+      } else {
+        input.classList.add('shake');
+        document.getElementById('splash-error').style.display = 'block';
+        setTimeout(() => input.classList.remove('shake'), 400);
+      }
+      return false;
+    }
+
+    function toggleSplashPw() {
+      const input = document.getElementById('splash-password');
+      input.type = input.type === 'password' ? 'text' : 'password';
+    }
+
+    function unlockApp() {
+      document.getElementById('splash-gate').classList.add('hidden');
+      document.getElementById('app-wrapper').classList.remove('locked');
+      // Default to Map tab
+      switchTab('map');
+    }
+
     // ─── Init ───
     document.addEventListener('DOMContentLoaded', () => {
       ExportModule.init();
       if (typeof SponsorFit !== 'undefined') SponsorFit.initPanel();
+
+      // Check if already authenticated
+      if (localStorage.getItem(SPLASH_KEY) === SPLASH_HASH) {
+        unlockApp();
+      }
     });
   </script>
 
