@@ -104,7 +104,40 @@ const DealScore = (() => {
     return { score, band, commentary, components };
   }
 
+  /**
+   * Quick parcel score — uses AROScoring when available for consistency.
+   * Falls back to a basic heuristic if AROScoring is not loaded.
+   */
   function computeAROScore(parcel) {
+    // Use the full AROScoring engine if available — keeps Deal Score aligned with Opportunity Score
+    if (typeof AROScoring !== 'undefined') {
+      const result = AROScoring.calculateScore({
+        yearBuilt: parcel.yearBuilt || parcel.effectiveyearbuilt,
+        useType: parcel.useDescription || parcel.usedescription || parcel.useType || '',
+        vacancyRate: parcel.vacancyRate || parcel.vacancy || '',
+        floorplateShape: parcel.floorplateShape || parcel.floorplate || '',
+        historicDesignation: parcel.historicDesignation || parcel.historic || 'None',
+        affordableStrategy: parcel.affordableStrategy || parcel.affordable || 'None',
+        zoning: parcel.zoning || '',
+        buildingSF: parcel.sqft || parcel.sqftmain || parcel.buildingSF || 0,
+        neighborhood: parcel.neighborhood || parcel.submarket || ''
+      });
+      const score = result.score;
+      let band, commentary;
+      if (score >= 80) {
+        band = 'A';
+        commentary = 'IC-Ready \u2014 strong across all dimensions';
+      } else if (score >= 60) {
+        band = 'B';
+        commentary = 'Watchlist \u2014 viable with right structure or price';
+      } else {
+        band = 'C';
+        commentary = 'Long-Shot \u2014 significant challenges to solve first';
+      }
+      return { score, band, commentary };
+    }
+
+    // Fallback: basic heuristic if AROScoring not loaded
     let score = 0;
     const yearBuilt = parseInt(parcel.yearBuilt || parcel.effectiveyearbuilt) || 2026;
     const age = 2026 - yearBuilt;

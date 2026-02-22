@@ -1191,23 +1191,20 @@
 
       let html = '';
 
-      // 0. Commercial Lending Solutions Deal Score (partial — Tab 1 has limited data)
+      // 0. Commercial Lending Solutions Deal Score — use Opportunity Score on Tab 1
       if (typeof DealScore !== 'undefined') {
-        const ds = DealScore.computeDealScore({
-          aro: { eligibility: eligibility.status },
-          physical: { totalScore: scoring.score }, // use opportunity score as proxy
-          yieldBase: 0,
-          costs: { costPerUnitMid: 0 },
-          proforma: { returnOnCost: 0 },
-          subsidyGap: { subsidyPerUnit: 0 }
-        });
-        const dsColor = DealScore.bandColor(ds.band);
+        const dsScore = scoring.score;
+        const dsBand = dsScore >= 80 ? 'A' : dsScore >= 60 ? 'B' : 'C';
+        const dsCommentary = dsScore >= 80 ? 'IC-Ready — strong across all dimensions'
+          : dsScore >= 60 ? 'Watchlist — viable with right structure or price'
+          : 'Long-Shot — significant challenges to solve first';
+        const dsColor = DealScore.bandColor(dsBand);
         html += `<div class="deal-score-display ${dsColor}" style="text-align:center;padding:20px;margin-bottom:16px;border-radius:12px;background:var(--${dsColor}-bg);border:2px solid var(--${dsColor});">
-          <div style="font-family:'DM Mono',monospace;font-size:0.68rem;letter-spacing:0.1em;text-transform:uppercase;color:var(--${dsColor});font-weight:700;">${BRAND.firmName} Deal Score</div>
-          <div style="font-family:'Playfair Display',serif;font-size:2.4rem;font-weight:800;color:var(--${dsColor});">${ds.score} <span style="font-size:1rem;color:var(--mid);">/ 100</span></div>
-          <div style="font-family:'DM Mono',monospace;font-size:0.88rem;font-weight:700;color:var(--${dsColor});">Band ${ds.band}</div>
-          <div style="font-size:0.85rem;color:var(--slate);margin-top:4px;">${ds.commentary}</div>
-          <div style="font-size:0.72rem;color:var(--mid);margin-top:4px;font-style:italic;">Partial score — run Conversion Feasibility for full analysis</div>
+          <div style="font-family:'DM Mono',monospace;font-size:0.78rem;letter-spacing:0.1em;text-transform:uppercase;color:var(--${dsColor});font-weight:700;">${BRAND.firmName} Deal Score</div>
+          <div style="font-family:'Playfair Display',serif;font-size:2.4rem;font-weight:800;color:var(--${dsColor});">${dsScore} <span style="font-size:1rem;color:var(--mid);">/ 100</span></div>
+          <div style="font-family:'DM Mono',monospace;font-size:0.88rem;font-weight:700;color:var(--${dsColor});">Band ${dsBand}</div>
+          <div style="font-size:0.88rem;color:var(--slate);margin-top:4px;">${dsCommentary}</div>
+          <div style="font-size:0.78rem;color:var(--mid);margin-top:4px;font-style:italic;">Run Conversion Feasibility for full financial analysis</div>
         </div>`;
       }
 
