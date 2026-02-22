@@ -639,7 +639,9 @@ code, .mono {
 
 /* Prospecting List Panel */
 .prospecting-panel {
-  padding: 28px 40px;
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 24px 28px;
 }
 
 .prospect-item {
@@ -682,8 +684,8 @@ code, .mono {
 
 .chip {
   font-family: 'DM Mono', monospace;
-  font-size: 0.65rem;
-  padding: 2px 8px;
+  font-size: 0.6rem;
+  padding: 1px 6px;
   border-radius: 10px;
   letter-spacing: 0.04em;
   text-transform: uppercase;
@@ -977,7 +979,7 @@ code, .mono {
 .pipeline-table {
   width: 100%;
   border-collapse: collapse;
-  font-size: 0.85rem;
+  font-size: 0.78rem;
 }
 
 .pipeline-table thead th {
@@ -987,7 +989,7 @@ code, .mono {
   text-transform: uppercase;
   color: var(--mid);
   text-align: left;
-  padding: 10px 12px;
+  padding: 7px 6px;
   border-bottom: 2px solid rgba(13,13,13,0.1);
   white-space: nowrap;
 }
@@ -1009,7 +1011,7 @@ code, .mono {
 }
 
 .pipeline-table td {
-  padding: 10px 12px;
+  padding: 6px 6px;
   border-bottom: 1px solid rgba(13,13,13,0.06);
   vertical-align: middle;
 }
@@ -1017,14 +1019,12 @@ code, .mono {
 .pipeline-address {
   font-weight: 600;
   color: var(--ink);
-  max-width: 220px;
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
 }
 
 .pipeline-use {
-  max-width: 120px;
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
@@ -1034,12 +1034,12 @@ code, .mono {
 .pipeline-score-badge {
   display: inline-flex;
   align-items: center;
-  gap: 4px;
+  gap: 2px;
   font-family: 'DM Mono', monospace;
-  font-size: 0.82rem;
+  font-size: 0.72rem;
   font-weight: 700;
-  padding: 3px 10px;
-  border-radius: 6px;
+  padding: 2px 6px;
+  border-radius: 4px;
 }
 .pipeline-score-badge.eligible {
   background: var(--eligible-bg);
@@ -1076,13 +1076,10 @@ code, .mono {
 
 @media (max-width: 700px) {
   .pipeline-table {
-    font-size: 0.78rem;
+    font-size: 0.7rem;
   }
   .pipeline-table td, .pipeline-table th {
-    padding: 8px 6px;
-  }
-  .pipeline-address {
-    max-width: 140px;
+    padding: 5px 4px;
   }
 }
 
@@ -1377,10 +1374,10 @@ code, .mono {
 /* ═══ STAGE PILL (inline dropdown) ═══ */
 .stage-pill {
   font-family: 'DM Mono', monospace;
-  font-size: 0.68rem;
+  font-size: 0.62rem;
   font-weight: 600;
   letter-spacing: 0.04em;
-  padding: 3px 8px;
+  padding: 2px 6px;
   border: 1px solid;
   border-radius: 10px;
   background: transparent;
@@ -1837,10 +1834,24 @@ code, .mono {
   .section-header { font-size: 9px; }
 }
 
-/* ─── Phase 7: Pipeline table — new columns responsive ─── */
-.pipeline-table { white-space: nowrap; background: #ffffff; border-radius: 8px; border: 1px solid var(--rule); overflow: hidden; }
-.pipeline-table th { font-size: 0.8rem; padding: 10px 12px; background: var(--cream); color: var(--slate); font-weight: 600; border-bottom: 2px solid var(--rule); }
-.pipeline-table td { font-size: 0.85rem; padding: 10px 12px; border-bottom: 1px solid var(--rule); }
+/* ─── Phase 7: Pipeline table — compact 12-col layout ─── */
+.pipeline-table-wrap { overflow-x: auto; -webkit-overflow-scrolling: touch; border-radius: 8px; border: 1px solid var(--rule); background: #ffffff; }
+.pipeline-table { table-layout: fixed; width: 100%; background: #ffffff; border-radius: 0; border: none; overflow: hidden; }
+.pipeline-table th { font-size: 0.7rem; padding: 7px 6px; background: var(--cream); color: var(--slate); font-weight: 600; border-bottom: 2px solid var(--rule); white-space: nowrap; }
+.pipeline-table td { font-size: 0.78rem; padding: 6px 6px; border-bottom: 1px solid var(--rule); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+/* Column widths — 12 cols */
+.pipeline-table .col-address { width: 22%; }
+.pipeline-table .col-score   { width: 9%; }
+.pipeline-table .col-stage   { width: 9%; }
+.pipeline-table .col-use     { width: 10%; }
+.pipeline-table .col-year    { width: 5%; }
+.pipeline-table .col-sf      { width: 7%; }
+.pipeline-table .col-elig    { width: 9%; }
+.pipeline-table .col-fit     { width: 6%; }
+.pipeline-table .col-timeline{ width: 7%; }
+.pipeline-table .col-nba     { width: 5%; }
+.pipeline-table .col-rank    { width: 6%; }
+.pipeline-table .col-actions { width: 5%; }
 .nba-icon { cursor: help; }
 .nba-icon:hover { transform: scale(1.2); }
 

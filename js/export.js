@@ -445,21 +445,26 @@ const ExportModule = (() => {
       return sortDir === 'desc' ? ' \u25BC' : ' \u25B2';
     };
 
-    let html = `<table class="pipeline-table">
+    let html = `<div class="pipeline-table-wrap"><table class="pipeline-table">
+      <colgroup>
+        <col class="col-address"><col class="col-score"><col class="col-stage"><col class="col-use">
+        <col class="col-year"><col class="col-sf"><col class="col-elig"><col class="col-fit">
+        <col class="col-timeline"><col class="col-nba"><col class="col-rank"><col class="col-actions">
+      </colgroup>
       <thead>
         <tr>
           <th class="sortable" onclick="ExportModule.sortPipeline('address')">Address${sortIcon('address')}</th>
-          <th class="sortable" onclick="ExportModule.sortPipeline('dealScore')">Deal Score${sortIcon('dealScore')}</th>
+          <th class="sortable" onclick="ExportModule.sortPipeline('dealScore')">Score${sortIcon('dealScore')}</th>
           <th>Stage</th>
           <th class="sortable" onclick="ExportModule.sortPipeline('useDescription')">Use${sortIcon('useDescription')}</th>
-          <th class="sortable" onclick="ExportModule.sortPipeline('yearBuilt')">Year${sortIcon('yearBuilt')}</th>
+          <th class="sortable" onclick="ExportModule.sortPipeline('yearBuilt')">Yr${sortIcon('yearBuilt')}</th>
           <th class="sortable" onclick="ExportModule.sortPipeline('sqft')">SF${sortIcon('sqft')}</th>
-          <th>Eligibility</th>
+          <th>Elig</th>
           <th>Fit</th>
-          <th>Timeline</th>
+          <th>Time</th>
           <th>NBA</th>
           <th>Rank</th>
-          <th>Actions</th>
+          <th></th>
         </tr>
       </thead>
       <tbody>`;
@@ -490,7 +495,7 @@ const ExportModule = (() => {
       </tr>`;
     });
 
-    html += `</tbody></table>`;
+    html += `</tbody></table></div>`;
 
     if (displayed.length < prospectingList.length) {
       html += `<div style="font-size:0.78rem;color:var(--mid);text-align:center;margin-top:8px;">Showing ${displayed.length} of ${prospectingList.length} properties (filters active)</div>`;
