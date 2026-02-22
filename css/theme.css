@@ -85,7 +85,7 @@ code, .mono {
 }
 
 .brand h1 {
-  font-size: 1.25rem;
+  font-size: 1.8rem;
   font-weight: 700;
   color: #ffffff;
   letter-spacing: -0.02em;
@@ -97,8 +97,8 @@ code, .mono {
 
 .brand .subtitle {
   font-family: 'DM Sans', sans-serif;
-  font-size: 0.8rem;
-  color: var(--mid);
+  font-size: 1rem;
+  color: rgba(255,255,255,0.6);
   font-weight: 400;
 }
 
