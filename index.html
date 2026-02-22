@@ -1,0 +1,1429 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Commercial Lending Solutions — LA Adaptive Reuse Identifier</title>
+
+  <!-- Leaflet CSS -->
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+  <link rel="stylesheet" href="https://unpkg.com/leaflet.markercluster@1.5.3/dist/MarkerCluster.css" />
+  <link rel="stylesheet" href="https://unpkg.com/leaflet.markercluster@1.5.3/dist/MarkerCluster.Default.css" />
+
+  <!-- App CSS -->
+  <link rel="stylesheet" href="css/theme.css">
+  <link rel="stylesheet" href="css/map.css">
+  <link rel="stylesheet" href="css/tab3.css">
+  <link rel="stylesheet" href="css/ai-prospects.css">
+</head>
+<body>
+
+  <!-- ═══ HEADER ═══ -->
+  <header class="app-header">
+    <div class="header-top">
+      <div class="brand">
+        <h1><span>Commercial Lending Solutions</span> — LA Adaptive Reuse Identifier</h1>
+        <span class="subtitle">Commercial Mortgage Brokerage</span>
+      </div>
+      <div style="display:flex;align-items:center;gap:10px;">
+        <span class="aro-date">ARO Effective Feb 1, 2026</span>
+        <button class="btn-demo" id="demo-mode-btn" onclick="DemoMode.toggle()">Demo Mode</button>
+      </div>
+    </div>
+    <!-- Demo Mode Banner -->
+    <div class="demo-banner" id="demo-banner" style="display:none;">
+      <span>&#x26A0; DEMO MODE — Sample properties loaded. Analysis is illustrative only — not investment advice.</span>
+      <button onclick="DemoMode.exit()" style="background:none;border:1px solid rgba(122,79,0,0.4);border-radius:6px;padding:2px 10px;font-size:0.78rem;color:var(--conditional);cursor:pointer;margin-left:12px;">Exit Demo Mode &times;</button>
+    </div>
+    <nav class="tab-nav">
+      <button class="tab-btn active" data-tab="screener" onclick="switchTab('screener')">Single Property Screener</button>
+      <button class="tab-btn" data-tab="map" onclick="switchTab('map')">Map Screener</button>
+      <button class="tab-btn" data-tab="feasibility" onclick="switchTab('feasibility')">Conversion Feasibility</button>
+      <button class="tab-btn" data-tab="prospecting" onclick="switchTab('prospecting')">Deal Pipeline <span class="badge" id="prospect-count">0</span></button>
+    </nav>
+  </header>
+
+  <!-- ═══ STATS BAR ═══ -->
+  <div class="stats-bar">
+    <div class="stat-item">
+      <span class="stat-number">15 yrs</span>
+      <span class="stat-label">Minimum building age for by-right approval</span>
+    </div>
+    <div class="stat-item">
+      <span class="stat-number">12,000+</span>
+      <span class="stat-label">Units created by 1999 ARO in Downtown alone</span>
+    </div>
+    <div class="stat-item">
+      <span class="stat-number">4,400+</span>
+      <span class="stat-label">Estimated new homes possible citywide</span>
+    </div>
+  </div>
+
+  <!-- ═══ TAB 1: SINGLE PROPERTY SCREENER ═══ -->
+  <div id="tab-screener" class="tab-content active">
+    <div class="screener-layout">
+
+      <!-- Left: Form Panel -->
+      <div class="form-panel">
+        <div class="form-section-title">Property Information</div>
+
+        <div class="form-group">
+          <label>Property Address</label>
+          <input type="text" id="input-address" placeholder="e.g. 3900 Wilshire Blvd, Los Angeles, CA">
+        </div>
+
+        <div class="form-group">
+          <label>Neighborhood / Submarket</label>
+          <select id="input-neighborhood">
+            <option value="">Select neighborhood...</option>
+            <option value="Downtown LA">Downtown LA</option>
+            <option value="Hollywood">Hollywood</option>
+            <option value="Koreatown/Wilshire Center">Koreatown / Wilshire Center</option>
+            <option value="Chinatown/Lincoln Heights">Chinatown / Lincoln Heights</option>
+            <option value="Mid-Wilshire">Mid-Wilshire</option>
+            <option value="Culver City">Culver City</option>
+            <option value="West LA/Brentwood">West LA / Brentwood</option>
+            <option value="Century City">Century City</option>
+            <option value="Santa Monica">Santa Monica</option>
+            <option value="Sherman Oaks/Van Nuys">Sherman Oaks / Van Nuys</option>
+            <option value="Burbank/Glendale">Burbank / Glendale</option>
+            <option value="El Segundo/Playa Vista">El Segundo / Playa Vista</option>
+            <option value="Pasadena">Pasadena</option>
+            <option value="Long Beach">Long Beach</option>
+            <option value="Other LA">Other LA</option>
+          </select>
+        </div>
+
+        <div class="form-group">
+          <label>Zoning <span class="tooltip-trigger" title="Verify zoning via ZIMAS at zimas.lacity.org">?</span></label>
+          <select id="input-zoning">
+            <option value="Unknown">Unknown</option>
+            <option value="C2">C2</option>
+            <option value="C4">C4</option>
+            <option value="CM">CM</option>
+            <option value="M1">M1</option>
+            <option value="M2">M2</option>
+            <option value="CR">CR</option>
+            <option value="P – Parking">P – Parking</option>
+            <option value="R3/R4">R3/R4</option>
+          </select>
+        </div>
+
+        <div class="form-section-title">Building Characteristics</div>
+
+        <div class="form-group">
+          <label>Year Built <span class="tooltip-trigger" title="Building age is the primary ARO eligibility criterion. 15+ years = by-right; 5-14 years = conditional.">?</span></label>
+          <input type="number" id="input-year-built" placeholder="e.g. 1965" min="1880" max="2026">
+        </div>
+
+        <div class="form-group">
+          <label>Building Size (SF)</label>
+          <input type="number" id="input-sf" placeholder="e.g. 85000" min="0">
+        </div>
+
+        <div class="form-group">
+          <label>Current Use Type <span class="tooltip-trigger" title="Office and hotel conversions are the primary ARO use case. Industrial/retail/parking also eligible.">?</span></label>
+          <select id="input-use-type">
+            <option value="">Select use type...</option>
+            <option value="Office-Low Rise 1-4fl">Office — Low Rise (1-4 fl)</option>
+            <option value="Office-Mid Rise 5-12fl">Office — Mid Rise (5-12 fl)</option>
+            <option value="Office-High Rise 13+fl">Office — High Rise (13+ fl)</option>
+            <option value="Retail/Strip Center">Retail / Strip Center</option>
+            <option value="Shopping Mall/Big Box">Shopping Mall / Big Box</option>
+            <option value="Hotel">Hotel</option>
+            <option value="Industrial/Warehouse">Industrial / Warehouse</option>
+            <option value="Parking Structure">Parking Structure</option>
+            <option value="Mixed Use">Mixed Use</option>
+            <option value="Other Commercial">Other Commercial</option>
+          </select>
+        </div>
+
+        <div class="form-group">
+          <label>Stories</label>
+          <input type="number" id="input-stories" placeholder="e.g. 8" min="1" max="100">
+        </div>
+
+        <div class="form-group">
+          <label>Vacancy Rate <span class="tooltip-trigger" title="Higher vacancy = stronger conversion motivation. 50%+ vacancy is a significant deal catalyst.">?</span></label>
+          <select id="input-vacancy">
+            <option value="Unknown">Unknown</option>
+            <option value="0-10%">0–10%</option>
+            <option value="11-30%">11–30%</option>
+            <option value="31-50%">31–50%</option>
+            <option value="51-75%">51–75%</option>
+            <option value="76-100%">76–100%</option>
+          </select>
+        </div>
+
+        <div class="form-section-title">Financial & Design</div>
+
+        <div class="form-group">
+          <label>Estimated Value / Ask ($)</label>
+          <input type="number" id="input-value" placeholder="e.g. 12000000" min="0">
+        </div>
+
+        <div class="form-group">
+          <label>Floorplate Shape <span class="tooltip-trigger" title="Narrow floorplates (≤70ft deep) are ideal for residential conversion — natural light reaches all units.">?</span></label>
+          <select id="input-floorplate">
+            <option value="Unknown">Unknown</option>
+            <option value="Narrow/Efficient ≤70ft deep">Narrow/Efficient (≤70ft deep)</option>
+            <option value="Medium 71-110ft">Medium (71–110ft)</option>
+            <option value="Deep/Challenging >110ft">Deep/Challenging (>110ft)</option>
+          </select>
+        </div>
+
+        <div class="form-group">
+          <label>Historic Designation <span class="tooltip-trigger" title="Historic buildings qualify for 20% Federal HTC + California HTC — significant equity source for conversion projects.">?</span></label>
+          <select id="input-historic">
+            <option value="None">None</option>
+            <option value="HCM/City Historic">HCM / City Historic</option>
+            <option value="California Register">California Register</option>
+            <option value="National Register">National Register</option>
+            <option value="Historic District">Historic District</option>
+            <option value="Unknown">Unknown</option>
+          </select>
+        </div>
+
+        <div class="form-group">
+          <label>Affordable Unit Strategy <span class="tooltip-trigger" title="Affordable components unlock density bonuses (AB 2011/SB 1227) and additional financing like HUD 221(d)(4) and tax-exempt bonds.">?</span></label>
+          <select id="input-affordable">
+            <option value="None-market rate only">None — market rate only</option>
+            <option value="Partial ≥11%">Partial (≥11% of units)</option>
+            <option value="Partial ≥25%">Partial (≥25% of units)</option>
+            <option value="100% Affordable">100% Affordable</option>
+            <option value="Unknown">Unknown</option>
+          </select>
+        </div>
+
+        <div class="form-group">
+          <label>Notes</label>
+          <textarea id="input-notes" rows="3" placeholder="Additional context, ownership notes, or deal considerations..."></textarea>
+        </div>
+
+        <button class="btn-primary" onclick="analyzeProperty()">Analyze Property</button>
+        <button class="btn-outline" onclick="clearForm()">Clear Form</button>
+
+        <!-- OM/Flyer Paste Parser -->
+        <div class="om-parser-panel">
+          <div class="form-section-title">OM / Flyer Paste Parser</div>
+          <p style="font-size:0.78rem;color:var(--mid);margin-bottom:8px;">Paste offering memorandum or flyer text to auto-extract property data.</p>
+          <textarea id="om-paste-input" rows="4" placeholder="Paste OM text here..." style="width:100%;font-family:'DM Sans',sans-serif;font-size:0.82rem;padding:9px 12px;border:1px solid rgba(13,13,13,0.15);border-radius:6px;background:var(--paper);color:var(--ink);resize:vertical;"></textarea>
+          <div style="display:flex;gap:8px;margin-top:8px;">
+            <button class="btn-secondary" style="flex:1;padding:8px;font-size:0.82rem;" onclick="OMParser.parseFromPanel()">Parse Text</button>
+            <button class="btn-outline" style="flex:0;width:auto;padding:8px 14px;font-size:0.82rem;margin-top:0;" onclick="OMParser.clearPanel()">Clear</button>
+          </div>
+          <div id="om-parse-preview" style="margin-top:10px;"></div>
+          <button class="btn-gold" id="om-fill-btn" style="display:none;width:100%;margin-top:8px;font-size:0.82rem;padding:8px;" onclick="OMParser.fillFromPanel()">Auto-Fill Form Fields</button>
+        </div>
+      </div>
+
+      <!-- Right: Results Panel -->
+      <div class="results-panel" id="results-panel">
+        <div class="empty-state" id="empty-state">
+          <div class="empty-state-icon">&#x1F3DB;</div>
+          <h3>Enter property details to begin</h3>
+          <p>Fill in the property information on the left and click "Analyze Property" to generate a full ARO eligibility assessment, opportunity score, and financing pathways.</p>
+        </div>
+        <div id="results-content" style="display:none;"></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ═══ TAB 2: MAP SCREENER ═══ -->
+  <div id="tab-map" class="tab-content">
+    <div class="map-layout">
+
+      <!-- Left: Filter Panel -->
+      <div class="filter-sidebar">
+        <div class="filter-header">
+          <h3>Filter Properties</h3>
+          <div class="results-counter" id="results-counter">Loading properties...</div>
+        </div>
+
+        <div class="filter-controls">
+          <!-- Property Type -->
+          <div class="filter-group">
+            <span class="filter-group-label">Property Type</span>
+            <div class="checkbox-group">
+              <label><input type="checkbox" class="filter-use-type" value="Office"> Office</label>
+              <label><input type="checkbox" class="filter-use-type" value="Retail/Commercial"> Retail / Commercial</label>
+              <label><input type="checkbox" class="filter-use-type" value="Industrial/Warehouse"> Industrial / Warehouse</label>
+              <label><input type="checkbox" class="filter-use-type" value="Hotel"> Hotel</label>
+              <label><input type="checkbox" class="filter-use-type" value="Parking Structure"> Parking Structure</label>
+              <label><input type="checkbox" class="filter-use-type" value="Mixed Use"> Mixed Use</label>
+            </div>
+          </div>
+
+          <!-- Building Age Range -->
+          <div class="filter-group">
+            <span class="filter-group-label">Building Age Range</span>
+            <div class="slider-card">
+              <div class="slider-row">
+                <span class="slider-label">Min Age</span>
+                <span class="slider-value" id="age-min-value">0</span>
+                <span class="slider-unit">years</span>
+              </div>
+              <input type="range" class="custom-slider" id="filter-age-min" min="0" max="80" value="0">
+              <div class="slider-ticks">
+                <span>0</span><span>15</span><span>30</span><span>50</span><span>80+</span>
+              </div>
+            </div>
+            <div class="slider-card">
+              <div class="slider-row">
+                <span class="slider-label">Max Age</span>
+                <span class="slider-value" id="age-max-value">80+</span>
+                <span class="slider-unit">years</span>
+              </div>
+              <input type="range" class="custom-slider" id="filter-age-max" min="0" max="80" value="80">
+              <div class="slider-ticks">
+                <span>0</span><span>15</span><span>30</span><span>50</span><span>80+</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- Minimum SF -->
+          <div class="filter-group">
+            <span class="filter-group-label">Minimum Building SF</span>
+            <select class="filter-select" id="filter-min-sf">
+              <option value="">Any</option>
+              <option value="5000">5,000+</option>
+              <option value="10000">10,000+</option>
+              <option value="25000">25,000+</option>
+              <option value="50000">50,000+</option>
+              <option value="100000">100,000+</option>
+            </select>
+          </div>
+
+          <!-- Eligibility Status -->
+          <div class="filter-group">
+            <span class="filter-group-label">Eligibility Status</span>
+            <div class="radio-group">
+              <label><input type="radio" name="eligibility-filter" value="all" checked> Show All</label>
+              <label><input type="radio" name="eligibility-filter" value="byright"> By-Right Only</label>
+              <label><input type="radio" name="eligibility-filter" value="conditional"> Conditional Only</label>
+              <label><input type="radio" name="eligibility-filter" value="hideIneligible"> Hide Ineligible</label>
+            </div>
+          </div>
+
+          <!-- Minimum Score -->
+          <div class="filter-group">
+            <span class="filter-group-label">Minimum Opportunity Score</span>
+            <div class="slider-card score-slider-card">
+              <div class="slider-row">
+                <span class="slider-label">Min Score</span>
+                <span class="slider-value score-value-display" id="score-slider-value">0</span>
+                <span class="slider-unit">/ 100</span>
+              </div>
+              <input type="range" class="custom-slider score-slider" id="filter-min-score" min="0" max="100" value="0">
+              <div class="slider-ticks">
+                <span>0</span><span>20</span><span>40</span><span>60</span><span>80</span><span>100</span>
+              </div>
+              <div class="score-legend">
+                <span class="score-legend-item" style="color:var(--ineligible)">Low</span>
+                <span class="score-legend-item" style="color:var(--conditional)">Moderate</span>
+                <span class="score-legend-item" style="color:var(--eligible)">Strong</span>
+                <span class="score-legend-item" style="color:var(--eligible)">Exceptional</span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="filter-actions">
+          <button class="btn-primary" id="apply-filters">Apply Filters</button>
+          <button class="btn-outline" id="reset-filters">Reset</button>
+        </div>
+      </div>
+
+      <!-- Middle: Property Results List -->
+      <div class="results-list-panel">
+        <div class="property-list-header">Top Results</div>
+        <div id="property-list"></div>
+      </div>
+
+      <!-- Right: Map -->
+      <div class="map-container">
+        <div class="map-loading">
+          <div class="mini-spinner"></div>
+          <span>Loading properties...</span>
+        </div>
+        <div id="map"></div>
+        <div class="map-legend"></div>
+
+        <!-- Detail Panel -->
+        <div class="detail-panel" id="detail-panel">
+          <div class="detail-panel-header">
+            <div>
+              <div class="detail-address"></div>
+              <div class="detail-ain"></div>
+            </div>
+            <button class="detail-close" onclick="MapEngine.closeDetailPanel()">&times;</button>
+          </div>
+          <div class="detail-body">
+            <div class="detail-meta-grid"></div>
+
+            <div class="detail-score-section">
+              <div class="section-heading">Opportunity Score</div>
+              <div class="detail-score-num">0</div>
+              <div class="detail-score-bar"><div class="detail-score-fill"></div></div>
+              <div class="detail-threshold" style="font-size:0.78rem;color:var(--mid);"></div>
+            </div>
+
+            <div class="section-heading">Deal Angles</div>
+            <div class="detail-angles"></div>
+
+            <div class="section-heading">Financing</div>
+            <div class="detail-financing"></div>
+
+            <div class="detail-actions">
+              <button class="btn-primary" onclick="runFullAnalysis()">&#x2192; Single Property Screener</button>
+              <button class="btn-primary" style="background:var(--slate);" onclick="runFeasibilityAnalysis()">&#x2192; Conversion Feasibility</button>
+              <button class="btn-gold" onclick="addCurrentToProspecting()">Add to Prospecting List</button>
+            </div>
+
+            <div class="detail-links">
+              <a href="https://assessor.lacounty.gov/" target="_blank" rel="noopener">LA County Assessor &#x2197;</a>
+              <a href="https://zimas.lacity.org/" target="_blank" rel="noopener">ZIMAS Zoning &#x2197;</a>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ═══ TAB 3: CONVERSION FEASIBILITY ANALYZER ═══ -->
+  <div id="tab-feasibility" class="tab-content">
+    <div class="feasibility-container">
+
+      <!-- Progress Bar -->
+      <div class="feasibility-progress">
+        <div class="progress-steps">
+          <div class="progress-step active" id="progress-step-1" onclick="FeasibilityTab.toggleModule(1)">
+            <span class="progress-step-num">1</span>Physical
+          </div>
+          <div class="progress-connector" id="progress-conn-1"></div>
+          <div class="progress-step" id="progress-step-2" onclick="FeasibilityTab.toggleModule(2)">
+            <span class="progress-step-num">2</span>Unit Yield
+          </div>
+          <div class="progress-connector" id="progress-conn-2"></div>
+          <div class="progress-step" id="progress-step-3" onclick="FeasibilityTab.toggleModule(3)">
+            <span class="progress-step-num">3</span>Costs
+          </div>
+          <div class="progress-connector" id="progress-conn-3"></div>
+          <div class="progress-step" id="progress-step-4" onclick="FeasibilityTab.toggleModule(4)">
+            <span class="progress-step-num">4</span>Pro Forma
+          </div>
+          <div class="progress-connector" id="progress-conn-4"></div>
+          <div class="progress-step" id="progress-step-5" onclick="FeasibilityTab.toggleModule(5)">
+            <span class="progress-step-num">5</span>ESG
+          </div>
+          <div class="progress-connector" id="progress-conn-5"></div>
+          <div class="progress-step" id="progress-step-report">
+            <span class="progress-step-num">R</span>Report
+          </div>
+        </div>
+      </div>
+
+      <!-- Fast Underwrite Button -->
+      <div style="display:flex;gap:12px;margin-bottom:20px;align-items:center;">
+        <button class="btn-gold" style="font-size:0.88rem;padding:12px 28px;" onclick="FastUnderwrite.runFastUnderwrite()">&#x26A1; Fast Underwrite</button>
+        <span style="font-size:0.78rem;color:var(--mid);">One-click smart-defaults underwrite &mdash; fills empty fields with neighborhood market data</span>
+      </div>
+
+      <!-- ══ MODULE 1: Physical Feasibility ══ -->
+      <div class="module-card active expanded" id="module-1">
+        <div class="module-header" onclick="FeasibilityTab.toggleModule(1)">
+          <div class="module-header-left">
+            <span class="module-number">1</span>
+            <div>
+              <div class="module-title">Physical Feasibility Assessment</div>
+              <div class="module-subtitle">The Studio One Eleven Method — 36+ conversions analyzed</div>
+              <div class="methodology-note">Based on methodology by Studio One Eleven (Long Beach), the most experienced adaptive reuse architecture firm in Southern California</div>
+            </div>
+          </div>
+          <div class="module-header-right">
+            <span class="module-check">&#x2713;</span>
+            <span class="module-chevron">&#x25BC;</span>
+          </div>
+        </div>
+        <div class="module-body">
+
+          <div class="m-section-title">Conversion Scope</div>
+          <div class="conversion-scope-group">
+            <label class="scope-radio"><input type="radio" name="conversion-scope" value="full" checked onchange="FeasibilityTab.onScopeChange()"> Full Building Conversion — convert entire building to residential</label>
+            <label class="scope-radio"><input type="radio" name="conversion-scope" value="partial" onchange="FeasibilityTab.onScopeChange()"> Partial Conversion — convert vacant floors only, retain occupied tenants</label>
+          </div>
+          <div id="partial-conversion-inputs" style="display:none;">
+            <div class="m-form-grid" style="margin-top:12px;">
+              <div class="m-form-group">
+                <label>Stories to Convert <span class="tooltip-trigger" title="Number of floors to convert to residential. Remaining floors retain current office/retail use.">?</span></label>
+                <input type="number" id="m1-stories-to-convert" placeholder="e.g. 4" min="1">
+              </div>
+              <div class="m-form-group">
+                <label>Current Occupied Stories (retained)</label>
+                <input type="number" id="m1-retained-stories" readonly tabindex="-1" style="background:rgba(13,13,13,0.04);cursor:default;">
+              </div>
+            </div>
+          </div>
+
+          <div class="m-section-title">Building Geometry</div>
+          <div class="m-form-grid">
+            <div class="m-form-group">
+              <label>Floorplate Width (ft) <span class="tooltip-trigger" title="The narrow dimension of the building floor. Ideal for conversion: &le;70ft. Danger zone: >110ft. Studio One Eleven targets buildings where no unit is more than 40-45ft from a window.">?</span></label>
+              <input type="number" id="m1-width" placeholder="e.g. 65">
+            </div>
+            <div class="m-form-group">
+              <label>Floorplate Depth / Lease Span (ft) <span class="tooltip-trigger" title="Distance from exterior facade to interior corridor/core. This is the #1 make-or-break factor. &le;40ft = excellent. 41-55ft = workable with design intervention. >55ft = very challenging.">?</span></label>
+              <input type="number" id="m1-depth" placeholder="e.g. 42">
+            </div>
+            <div class="m-form-group">
+              <label>Floor-to-Floor Height (ft) <span class="tooltip-trigger" title="Pre-1970 buildings often have 10-14ft heights — a huge residential upside. Post-1980 office typically 9-10ft. Minimum for residential: 9ft.">?</span></label>
+              <input type="number" id="m1-f2f" placeholder="e.g. 12" step="0.5">
+            </div>
+            <div class="m-form-group">
+              <label>Number of Stories</label>
+              <input type="number" id="m1-stories" placeholder="e.g. 8" min="1">
+            </div>
+            <div class="m-form-group">
+              <label>Total Building SF</label>
+              <input type="number" id="m1-total-sf" placeholder="e.g. 85000">
+            </div>
+            <div class="m-form-group">
+              <label>Typical Floor SF <span class="tooltip-trigger" title="Used to estimate core size and usable residential area per floor.">?</span></label>
+              <input type="number" id="m1-typical-sf" placeholder="e.g. 10600">
+            </div>
+          </div>
+
+          <div class="m-section-title">Window & Envelope</div>
+          <div class="m-form-grid">
+            <div class="m-form-group">
+              <label>Window Type <span class="tooltip-trigger" title="Building codes require operable windows in every habitable room. Sealed curtain wall buildings require full window replacement — a significant cost adder.">?</span></label>
+              <select id="m1-window-type">
+                <option value="Unknown">Unknown</option>
+                <option value="Operable Windows (pre-1970s — ideal)">Operable Windows (pre-1970s — ideal)</option>
+                <option value="Fixed Windows, Single Pane (1970s-1980s — replaceable)">Fixed Windows, Single Pane (1970s-1980s)</option>
+                <option value="Sealed Curtain Wall (1980s-2000s — major challenge)">Sealed Curtain Wall (1980s-2000s)</option>
+                <option value="Ribbon/Wrap Windows (pre-1970s — excellent)">Ribbon/Wrap Windows (pre-1970s)</option>
+              </select>
+            </div>
+            <div class="m-form-group">
+              <label>Facade Material</label>
+              <select id="m1-facade">
+                <option value="Unknown">Unknown</option>
+                <option value="Brick / Masonry">Brick / Masonry (excellent)</option>
+                <option value="Precast Concrete">Precast Concrete (good)</option>
+                <option value="Glass Curtain Wall">Glass Curtain Wall (challenging)</option>
+                <option value="Stucco / EIFS">Stucco / EIFS (good)</option>
+                <option value="Heavy Timber / Wood">Heavy Timber / Wood (excellent)</option>
+                <option value="Metal Panel">Metal Panel (fair)</option>
+              </select>
+            </div>
+          </div>
+
+          <div class="m-section-title">Structural</div>
+          <div class="m-form-grid">
+            <div class="m-form-group">
+              <label>Structural System <span class="tooltip-trigger" title="Concrete frame buildings are the gold standard for conversion — inherent sound attenuation between floors, durable, and the exposed concrete aesthetic is highly desirable in residential.">?</span></label>
+              <select id="m1-structural">
+                <option value="Unknown">Unknown</option>
+                <option value="Concrete Frame (excellent — durable, sound attenuation)">Concrete Frame (excellent)</option>
+                <option value="Steel Frame with Concrete Deck (excellent)">Steel Frame with Concrete Deck (excellent)</option>
+                <option value="Heavy Timber / Wood Bowstring Truss (excellent — character asset)">Heavy Timber / Bowstring Truss (excellent)</option>
+                <option value="Masonry / Brick Load-bearing (good — historic character)">Masonry / Brick Load-bearing (good)</option>
+                <option value="Steel Frame with Metal Deck (fair — needs fireproofing upgrade)">Steel Frame with Metal Deck (fair)</option>
+              </select>
+            </div>
+            <div class="m-form-group">
+              <label>Seismic Compliance <span class="tooltip-trigger" title="Seismic retrofit for pre-1980 concrete or masonry buildings can add $20-60/SF to conversion costs in LA.">?</span></label>
+              <select id="m1-seismic">
+                <option value="Unknown">Unknown</option>
+                <option value="Pre-1980 (soft story / URM risk)">Pre-1980 (soft story / URM risk)</option>
+                <option value="1980-1994 (pre-Northridge)">1980-1994 (pre-Northridge)</option>
+                <option value="Post-1994 (Northridge code compliant)">Post-1994 (Northridge compliant)</option>
+                <option value="Already seismically retrofitted">Already seismically retrofitted</option>
+              </select>
+            </div>
+          </div>
+
+          <div class="m-section-title">MEP & Infrastructure</div>
+          <div class="m-form-grid">
+            <div class="m-form-group">
+              <label>MEP Condition <span class="tooltip-trigger" title="Buildings with fully deferred maintenance are often BETTER conversion candidates — owners are more motivated and a complete MEP replacement is already budgeted.">?</span></label>
+              <select id="m1-mep">
+                <option value="Unknown">Unknown</option>
+                <option value="Fully deferred — systems at end of life">Fully deferred — end of life (ironically good)</option>
+                <option value="Partially updated — mixed systems">Partially updated — mixed systems</option>
+                <option value="Recently updated (2010+)">Recently updated (2010+)</option>
+              </select>
+            </div>
+            <div class="m-form-group">
+              <label>Existing Elevator Count <span class="tooltip-trigger" title="Residential typically needs 1 elevator per 75-100 units. Office buildings are often over-elevatored — shafts can be repurposed for plumbing stacks.">?</span></label>
+              <input type="number" id="m1-elevators" placeholder="e.g. 3" min="0">
+            </div>
+            <div class="m-form-group">
+              <label>Loading Dock / Service Access</label>
+              <select id="m1-loading">
+                <option value="Unknown">Unknown</option>
+                <option value="Yes">Yes — existing dock (construction advantage)</option>
+                <option value="No">No</option>
+              </select>
+            </div>
+          </div>
+
+          <div class="m-section-title">Site & Parking</div>
+          <div class="m-form-grid">
+            <div class="m-form-group">
+              <label>Foundation Condition <span class="tooltip-trigger" title="Foundation condition can represent up to 40% of total project costs in worst-case LA adaptive reuse scenarios (Substrata, 2026). Buildings with poor foundation condition should be investigated by a structural engineer before advancing. Ideal candidates require less than 15% of total budget for foundation remediation.">?</span></label>
+              <select id="m1-foundation">
+                <option value="Unknown">Unknown — no inspection on file</option>
+                <option value="Excellent">Excellent — no known issues, recent inspection on file</option>
+                <option value="Good">Good — minor repairs only, &lt;5% of budget</option>
+                <option value="Fair">Fair — moderate remediation needed, 5-15% of budget</option>
+                <option value="Poor">Poor — significant work required, &gt;15% of budget (project risk)</option>
+              </select>
+            </div>
+            <div class="m-form-group">
+              <label>Surface Parking (spaces) <span class="tooltip-trigger" title="Excess surface parking = bonus unit yield. Residential requires far less parking than office.">?</span></label>
+              <input type="number" id="m1-surface-parking" placeholder="e.g. 20" min="0">
+            </div>
+            <div class="m-form-group">
+              <label>Structured Parking (spaces) <span class="tooltip-trigger" title="Structured parking garages 5+ years old qualify for by-right ARO conversion independently.">?</span></label>
+              <input type="number" id="m1-structured-parking" placeholder="e.g. 150" min="0">
+            </div>
+            <div class="m-form-group">
+              <label>Site Area (SF) <span class="tooltip-trigger" title="Used to calculate FAR and assess infill potential on surplus land.">?</span></label>
+              <input type="number" id="m1-site-area" placeholder="e.g. 22000" min="0">
+            </div>
+          </div>
+
+          <div class="m-section-title">Character Features</div>
+          <div class="character-grid">
+            <label class="character-check"><input type="checkbox" value="Exposed concrete waffle slab ceilings"> Exposed concrete waffle slab ceilings</label>
+            <label class="character-check"><input type="checkbox" value="Original brick / masonry walls (interior)"> Original brick / masonry walls (interior)</label>
+            <label class="character-check"><input type="checkbox" value="Heavy timber or bowstring truss structure"> Heavy timber or bowstring truss structure</label>
+            <label class="character-check"><input type="checkbox" value="Large arched windows or industrial glazing"> Large arched windows or industrial glazing</label>
+            <label class="character-check"><input type="checkbox" value="Ribbon windows (horizontal bands)"> Ribbon windows (horizontal bands)</label>
+            <label class="character-check"><input type="checkbox" value="High ceilings (12ft+)"> High ceilings (12ft+)</label>
+            <label class="character-check"><input type="checkbox" value="Original terrazzo or concrete floors"> Original terrazzo or concrete floors</label>
+            <label class="character-check"><input type="checkbox" value="Art deco / mid-century architectural details"> Art deco / mid-century details</label>
+            <label class="character-check"><input type="checkbox" value="Rooftop with view potential"> Rooftop with view potential</label>
+            <label class="character-check"><input type="checkbox" value="Courtyard or light well potential"> Courtyard or light well potential</label>
+            <label class="character-check"><input type="checkbox" value="Corner location (two-sided natural light)"> Corner location (two-sided light)</label>
+            <label class="character-check"><input type="checkbox" value="Adjacent to transit or walkable retail"> Adjacent to transit or walkable retail</label>
+          </div>
+
+          <!-- Output area -->
+          <div id="m1-output" style="display:none;"></div>
+
+          <div style="display:flex;gap:12px;margin-top:16px;">
+            <button class="btn-primary" style="flex:1;" onclick="FeasibilityTab.calculatePhysical()">Assess Physical Feasibility</button>
+            <button class="btn-gold" style="flex:1;display:none;" id="m1-complete" onclick="FeasibilityTab.onModule1Complete()">Complete &amp; Continue</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- ══ MODULE 2: Unit Yield ══ -->
+      <div class="module-card locked" id="module-2">
+        <div class="module-header" onclick="FeasibilityTab.toggleModule(2)">
+          <div class="module-header-left">
+            <span class="module-number">2</span>
+            <div>
+              <div class="module-title">Residential Unit Yield Estimator</div>
+              <div class="module-subtitle">How many units can this building realistically support?</div>
+            </div>
+          </div>
+          <div class="module-header-right">
+            <span class="module-check">&#x2713;</span>
+            <span class="module-chevron">&#x25BC;</span>
+          </div>
+        </div>
+        <div class="module-body">
+          <div class="m-section-title">Layout Assumptions</div>
+          <div class="m-form-grid">
+            <div class="m-form-group">
+              <label>Corridor Width (ft) <span class="tooltip-trigger" title="Double-loaded corridor width. Standard residential corridor is 5-6ft. Wider corridors reduce usable unit depth per side.">?</span></label>
+              <input type="number" id="m2-corridor-width" value="6" min="4" max="12" step="0.5">
+            </div>
+            <div class="m-form-group">
+              <label>Min Window Distance (ft) <span class="tooltip-trigger" title="California Building Code requires natural light in habitable rooms. Units deeper than this distance from the window wall face daylight compliance challenges.">?</span></label>
+              <input type="number" id="m2-min-window-dist" value="25" min="15" max="40" step="1">
+            </div>
+          </div>
+          <div id="m2-output" style="display:none;"></div>
+          <div style="margin-top:16px;">
+            <button class="btn-gold" style="display:none;" id="m2-complete" onclick="FeasibilityTab.onModule2Complete()">Accept Yield Estimate &amp; Continue</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- ══ MODULE 3: Cost Estimator ══ -->
+      <div class="module-card locked" id="module-3">
+        <div class="module-header" onclick="FeasibilityTab.toggleModule(3)">
+          <div class="module-header-left">
+            <span class="module-number">3</span>
+            <div>
+              <div class="module-title">Conversion Cost Estimate</div>
+              <div class="module-subtitle">Hard cost ranges based on building type and condition</div>
+            </div>
+          </div>
+          <div class="module-header-right">
+            <span class="module-check">&#x2713;</span>
+            <span class="module-chevron">&#x25BC;</span>
+          </div>
+        </div>
+        <div class="module-body">
+          <div class="m-form-grid">
+            <div class="m-form-group">
+              <label>Building Classification</label>
+              <select id="m3-classification">
+                <option value="Office Low Rise">Office Low Rise</option>
+                <option value="Office Mid Rise" selected>Office Mid Rise</option>
+                <option value="Office High Rise">Office High Rise</option>
+                <option value="Warehouse/Industrial">Warehouse / Industrial</option>
+                <option value="Hotel/Motel">Hotel / Motel</option>
+                <option value="Retail/Commercial">Retail / Commercial</option>
+                <option value="Parking Structure">Parking Structure</option>
+              </select>
+            </div>
+            <div class="m-form-group">
+              <label>Conversion Type</label>
+              <select id="m3-conversion-type">
+                <option value="Standard">Standard Residential (no historic)</option>
+                <option value="Historic">Historic Rehabilitation (with HTC)</option>
+                <option value="Affordable">Affordable Housing (100% — LIHTC)</option>
+                <option value="Mixed">Mixed-Income (partial affordable)</option>
+                <option value="Creative">Creative / Live-Work (loft-style)</option>
+              </select>
+            </div>
+            <div class="m-form-group">
+              <label>Quality Level</label>
+              <select id="m3-quality">
+                <option value="Standard">Market Rate Standard ($)</option>
+                <option value="Premium">Market Rate Premium ($$)</option>
+                <option value="Luxury">Luxury / Boutique ($$$)</option>
+              </select>
+            </div>
+          </div>
+
+          <div class="m-checkbox-row" id="m3-seismic-row">
+            <input type="checkbox" id="m3-seismic"> <label for="m3-seismic">Include Seismic Retrofit</label>
+          </div>
+          <div class="m-checkbox-row" id="m3-window-row">
+            <input type="checkbox" id="m3-windows"> <label for="m3-windows">Include Window Replacement</label>
+          </div>
+          <div class="m-checkbox-row">
+            <input type="checkbox" id="m3-parking-conv"> <label for="m3-parking-conv">Include Parking Conversion</label>
+          </div>
+          <div class="m-form-grid" id="m3-parking-units-row" style="display:none;">
+            <div class="m-form-group">
+              <label>Parking Units to Convert</label>
+              <input type="number" id="m3-parking-units" placeholder="e.g. 8" min="0">
+            </div>
+          </div>
+
+          <div id="m3-output" style="display:none;"></div>
+
+          <div style="display:flex;gap:12px;margin-top:16px;">
+            <button class="btn-primary" style="flex:1;" onclick="FeasibilityTab.calculateCost()">Calculate Costs</button>
+            <button class="btn-gold" style="flex:1;display:none;" id="m3-complete" onclick="FeasibilityTab.onModule3Complete()">Accept Costs &amp; Continue</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- ══ MODULE 4: Pro Forma ══ -->
+      <div class="module-card locked" id="module-4">
+        <div class="module-header" onclick="FeasibilityTab.toggleModule(4)">
+          <div class="module-header-left">
+            <span class="module-number">4</span>
+            <div>
+              <div class="module-title">Back-of-Envelope Pro Forma</div>
+              <div class="module-subtitle">Is the conversion financially viable? Rough returns analysis.</div>
+            </div>
+          </div>
+          <div class="module-header-right">
+            <span class="module-check">&#x2713;</span>
+            <span class="module-chevron">&#x25BC;</span>
+          </div>
+        </div>
+        <div class="module-body">
+          <div class="pf-input-grid">
+            <div class="m-form-group">
+              <label>Acquisition Price ($)</label>
+              <input type="number" id="m4-acquisition" placeholder="e.g. 12000000">
+            </div>
+            <div class="m-form-group">
+              <label>Projected Rent — Studio ($/mo)</label>
+              <input type="number" id="m4-studio-rent" placeholder="e.g. 2200" value="2200">
+            </div>
+            <div class="m-form-group">
+              <label>Projected Rent — 1BR ($/mo)</label>
+              <input type="number" id="m4-1br-rent" placeholder="e.g. 2800" value="2800">
+            </div>
+            <div class="m-form-group">
+              <label>Projected Rent — 2BR ($/mo)</label>
+              <input type="number" id="m4-2br-rent" placeholder="e.g. 3600" value="3600">
+            </div>
+            <div class="m-form-group">
+              <label>% Affordable Units</label>
+              <input type="number" id="m4-pct-affordable" placeholder="0" value="0" min="0" max="100">
+            </div>
+            <div class="m-form-group">
+              <label>Affordable Rent (% of market)</label>
+              <input type="number" id="m4-affordable-pct" placeholder="60" value="60" min="0" max="100">
+            </div>
+            <div class="m-form-group">
+              <label>Stabilized Vacancy Rate</label>
+              <select id="m4-vacancy">
+                <option value="3">3%</option>
+                <option value="5" selected>5%</option>
+                <option value="7">7%</option>
+                <option value="10">10%</option>
+              </select>
+            </div>
+            <div class="m-form-group">
+              <label>Operating Expense Ratio</label>
+              <select id="m4-opex">
+                <option value="35">35%</option>
+                <option value="40" selected>40%</option>
+                <option value="45">45%</option>
+              </select>
+            </div>
+            <div class="m-form-group">
+              <label>Exit Cap Rate</label>
+              <select id="m4-cap-rate">
+                <option value="4.5">4.5%</option>
+                <option value="5.0">5.0%</option>
+                <option value="5.5" selected>5.5%</option>
+                <option value="6.0">6.0%</option>
+                <option value="6.5">6.5%</option>
+              </select>
+            </div>
+            <div class="m-form-group">
+              <label>Construction Loan Rate (%)</label>
+              <input type="number" id="m4-loan-rate" value="7.5" step="0.25" min="0">
+            </div>
+            <div class="m-form-group">
+              <label>Target Return on Cost (%) <span class="tooltip-trigger" title="Minimum ROC threshold for project viability. 6.5% is typical for market-rate conversions. If actual ROC falls below this target, the subsidy gap calculator shows the incentive amount needed.">?</span></label>
+              <input type="number" id="m4-target-roc" value="6.5" step="0.25" min="0" max="15">
+            </div>
+            <div class="m-form-group full-width">
+              <label>Equity / Loan Structure</label>
+              <select id="m4-loan-structure">
+                <option value="65% LTC">65% LTC Construction Loan</option>
+                <option value="70% LTC">70% LTC Construction Loan</option>
+                <option value="HUD 221d4">HUD 221(d)(4) — 85% LTV Non-Recourse</option>
+                <option value="Bridge">Bridge Debt + Perm Refi</option>
+              </select>
+            </div>
+          </div>
+
+          <div id="m4-output" style="display:none;"></div>
+
+          <div style="display:flex;gap:12px;margin-top:16px;">
+            <button class="btn-primary" style="flex:1;" onclick="FeasibilityTab.calculateProForma()">Run Pro Forma</button>
+            <button class="btn-gold" style="flex:1;display:none;" id="m4-complete" onclick="FeasibilityTab.onModule4Complete()">Accept Pro Forma &amp; Continue</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- ══ MODULE 5: ESG & Sustainability ══ -->
+      <div class="module-card locked" id="module-5">
+        <div class="module-header" onclick="FeasibilityTab.toggleModule(5)">
+          <div class="module-header-left">
+            <span class="module-number">5</span>
+            <div>
+              <div class="module-title">Sustainability Impact Analysis</div>
+              <div class="module-subtitle">The green building case — critical for ESG capital and community support</div>
+            </div>
+          </div>
+          <div class="module-header-right">
+            <span class="module-check">&#x2713;</span>
+            <span class="module-chevron">&#x25BC;</span>
+          </div>
+        </div>
+        <div class="module-body">
+          <div id="m5-output" style="display:none;"></div>
+          <div style="margin-top:16px;">
+            <button class="btn-gold" style="display:none;" id="m5-complete" onclick="FeasibilityTab.onModule5Complete()">Complete Analysis &amp; Generate Report</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- ══ Sponsor Notes (Optional) ══ -->
+      <div class="module-card" id="sponsor-notes-card" style="opacity:0.7;">
+        <div class="module-header" onclick="document.getElementById('sponsor-notes-card').classList.toggle('expanded')">
+          <div class="module-header-left">
+            <span class="module-number" style="background:rgba(184,150,12,0.15);color:var(--gold);">S</span>
+            <div>
+              <div class="module-title">Sponsor Notes (Optional)</div>
+              <div class="module-subtitle">For IC Memo — describe sponsor experience, JV structure, and exit plan</div>
+            </div>
+          </div>
+          <div class="module-header-right">
+            <span class="module-chevron">&#x25BC;</span>
+          </div>
+        </div>
+        <div class="module-body">
+          <div class="m-form-grid">
+            <div class="m-form-group full-width">
+              <label>Sponsor Experience</label>
+              <textarea id="sponsor-experience" rows="2" placeholder="e.g., 15 years adaptive reuse, 8 completed conversions in LA, partnered with Meta Housing Corporation" style="width:100%;font-family:'DM Sans',sans-serif;font-size:0.88rem;padding:9px 12px;border:1px solid rgba(13,13,13,0.15);border-radius:6px;background:var(--paper);color:var(--ink);resize:vertical;"></textarea>
+            </div>
+            <div class="m-form-group">
+              <label>JV Structure</label>
+              <input type="text" id="sponsor-jv" placeholder="e.g., 70/30 LP/GP, preferred return 8%, promote above 12% IRR">
+            </div>
+            <div class="m-form-group">
+              <label>Hold Period</label>
+              <input type="text" id="sponsor-hold" placeholder="e.g., 5-year hold, stabilize and refi at month 30">
+            </div>
+            <div class="m-form-group full-width">
+              <label>Exit Strategy</label>
+              <input type="text" id="sponsor-exit" placeholder="e.g., Sale to institutional multifamily buyer at stabilization; target 5.0% exit cap">
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ══ Sponsor Profile ══ -->
+      <div class="module-card" id="sponsor-profile-panel" style="opacity:0.7;">
+        <div class="module-header" onclick="SponsorFit.togglePanel()">
+          <div class="module-header-left">
+            <span class="module-number" style="background:rgba(184,150,12,0.15);color:var(--gold);">&#x1F465;</span>
+            <div>
+              <div class="module-title">Sponsor Profile</div>
+              <div class="module-subtitle">Define your investor's mandate — auto-scores deal fit</div>
+            </div>
+          </div>
+          <div class="module-header-right">
+            <span class="sp-chevron">&#x25B6;</span>
+          </div>
+        </div>
+        <div class="sponsor-panel-content" style="display:none;padding:12px 16px;">
+          <div class="m-form-grid">
+            <div class="m-form-group">
+              <label>Profile Name</label>
+              <input type="text" id="sp-name" value="Default Sponsor">
+            </div>
+            <div class="m-form-group">
+              <label>Target Hold Period (years)</label>
+              <input type="number" id="sp-hold" value="5" min="1" max="30">
+            </div>
+            <div class="m-form-group">
+              <label>Risk Tolerance</label>
+              <select id="sp-risk">
+                <option value="core">Core</option>
+                <option value="core-plus">Core-Plus</option>
+                <option value="value-add" selected>Value-Add</option>
+                <option value="opportunistic">Opportunistic</option>
+              </select>
+            </div>
+            <div class="m-form-group">
+              <label>Min Deal Size ($)</label>
+              <input type="number" id="sp-min-size" value="5000000" min="0">
+            </div>
+            <div class="m-form-group">
+              <label>Max Deal Size ($)</label>
+              <input type="number" id="sp-max-size" value="80000000" min="0">
+            </div>
+            <div class="m-form-group">
+              <label>Minimum ROC (%)</label>
+              <input type="number" id="sp-min-roc" value="6.0" min="0" max="30" step="0.1">
+            </div>
+            <div class="m-form-group">
+              <label>Max Leverage / LTC (%)</label>
+              <input type="number" id="sp-max-ltc" value="75" min="0" max="100">
+            </div>
+          </div>
+          <div style="display:flex;gap:8px;margin-top:10px;">
+            <button class="btn-gold" onclick="SponsorFit.saveFromPanel()">Save Profile</button>
+            <button class="btn-secondary" onclick="SponsorFit.resetToDefaults()">Reset to Defaults</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- ══ Final Report ══ -->
+      <div class="final-report" id="final-report"></div>
+
+      <div class="export-row" id="report-export-row" style="display:none;">
+        <button class="btn-gold" onclick="FeasibilityTab.exportReport()">Export Full Report</button>
+        <button class="btn-gold" onclick="ICMemo.generate()" style="background:var(--ink);">Generate IC Memo</button>
+        <button class="btn-secondary" onclick="DealSnapshot.openFromReport()">Quick Snapshot</button>
+        <button class="btn-secondary" onclick="FastUnderwrite.copyOfferSummaryFromState()">Copy Offer Summary</button>
+        <button class="btn-secondary" onclick="window.print()">Print Report</button>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- ═══ TAB 4: DEAL PIPELINE ═══ -->
+  <div id="tab-prospecting" class="tab-content">
+    <div class="prospecting-panel">
+      <!-- KPI Dashboard -->
+      <div id="pipeline-kpi"></div>
+
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:16px;flex-wrap:wrap;gap:10px;">
+        <h2 style="font-size:1.3rem;">Deal Pipeline</h2>
+        <div style="display:flex;gap:10px;align-items:center;">
+          <div class="view-toggle">
+            <button class="view-toggle-btn active" data-view="table" onclick="ExportModule.setViewMode('table')">Table</button>
+            <button class="view-toggle-btn" data-view="kanban" onclick="ExportModule.setViewMode('kanban')">Kanban</button>
+          </div>
+          <button class="btn-gold" onclick="ExportModule.exportProspectingCSV()">Export CSV</button>
+          <button class="btn-outline" style="width:auto;" onclick="confirmClearList()">Clear All</button>
+        </div>
+      </div>
+
+      <!-- Stage Summary Bar -->
+      <div id="pipeline-stage-summary"></div>
+
+      <div class="pipeline-filters" id="pipeline-filters">
+        <button class="pipeline-filter-btn" data-filter="icReady" onclick="ExportModule.togglePipelineFilter('icReady')">IC-Ready (Score &ge; 80)</button>
+        <button class="pipeline-filter-btn" data-filter="rocTarget" onclick="ExportModule.togglePipelineFilter('rocTarget')">ROC &ge; 6.5%</button>
+        <button class="pipeline-filter-btn" data-filter="lowGap" onclick="ExportModule.togglePipelineFilter('lowGap')">Gap &lt; $50K/unit</button>
+        <button class="pipeline-filter-btn outline" onclick="ExportModule.clearPipelineFilters()">Clear Filters</button>
+      </div>
+
+      <!-- Investment Criteria Profiles -->
+      <div id="criteria-profiles-container"></div>
+
+      <div id="prospecting-list-items"></div>
+    </div>
+
+    <!-- AI-Recommended Prospects -->
+    <div class="ai-section-divider"><span class="ai-label">AI-Powered Analysis</span></div>
+
+    <div class="ai-prospects-header">
+      <div>
+        <h2>AI-Recommended Prospects</h2>
+        <p>~90 curated LA properties ranked by weighted scoring engine. Select a strategy or fine-tune weights.</p>
+      </div>
+    </div>
+
+    <div class="strategy-presets">
+      <button class="preset-btn active" data-preset="balanced">Balanced</button>
+      <button class="preset-btn" data-preset="distress">Value-Add Distress</button>
+      <button class="preset-btn" data-preset="trophy">Trophy Conversion</button>
+      <button class="preset-btn" data-preset="affordable">Affordable Housing Play</button>
+      <button class="preset-btn" data-preset="historic">Historic Tax Credit</button>
+    </div>
+
+    <button class="weights-toggle" id="weights-toggle" onclick="AIProspects.toggleWeightsPanel()">&#9662; Advanced Weights</button>
+    <div class="weights-panel" id="weights-panel">
+      <div class="weight-row">
+        <span class="weight-label">Age</span>
+        <input type="range" class="weight-slider" id="weight-age" min="0" max="3" step="0.1" value="1.0">
+        <span class="weight-value" id="weight-val-age">1.0</span>
+      </div>
+      <div class="weight-row">
+        <span class="weight-label">Vacancy</span>
+        <input type="range" class="weight-slider" id="weight-vacancy" min="0" max="3" step="0.1" value="1.0">
+        <span class="weight-value" id="weight-val-vacancy">1.0</span>
+      </div>
+      <div class="weight-row">
+        <span class="weight-label">Use Type</span>
+        <input type="range" class="weight-slider" id="weight-useType" min="0" max="3" step="0.1" value="1.0">
+        <span class="weight-value" id="weight-val-useType">1.0</span>
+      </div>
+      <div class="weight-row">
+        <span class="weight-label">Floorplate</span>
+        <input type="range" class="weight-slider" id="weight-floorplate" min="0" max="3" step="0.1" value="1.0">
+        <span class="weight-value" id="weight-val-floorplate">1.0</span>
+      </div>
+      <div class="weight-row">
+        <span class="weight-label">Historic</span>
+        <input type="range" class="weight-slider" id="weight-historic" min="0" max="3" step="0.1" value="1.0">
+        <span class="weight-value" id="weight-val-historic">1.0</span>
+      </div>
+      <div class="weight-row">
+        <span class="weight-label">Affordable</span>
+        <input type="range" class="weight-slider" id="weight-affordable" min="0" max="3" step="0.1" value="1.0">
+        <span class="weight-value" id="weight-val-affordable">1.0</span>
+      </div>
+      <div class="weight-row">
+        <span class="weight-label">Zoning</span>
+        <input type="range" class="weight-slider" id="weight-zoning" min="0" max="3" step="0.1" value="1.0">
+        <span class="weight-value" id="weight-val-zoning">1.0</span>
+      </div>
+    </div>
+
+    <div class="ai-results-meta" id="ai-results-meta"></div>
+    <div id="ai-prospects-cards"></div>
+    <div class="ai-show-more" id="ai-show-more"></div>
+  </div>
+
+  <!-- ═══ DEAL SNAPSHOT PANEL ═══ -->
+  <div class="snapshot-overlay" id="snapshot-overlay" style="display:none;" onclick="DealSnapshot.close()"></div>
+  <div class="snapshot-panel" id="snapshot-panel" style="display:none;">
+    <div class="snapshot-header">
+      <span style="font-family:'DM Mono',monospace;font-size:0.68rem;letter-spacing:0.1em;text-transform:uppercase;color:var(--gold);font-weight:700;">Deal Snapshot</span>
+      <button class="snapshot-close" onclick="DealSnapshot.close()">&times;</button>
+    </div>
+    <div class="snapshot-body" id="snapshot-body"></div>
+  </div>
+
+  <!-- ═══ LOADING OVERLAY ═══ -->
+  <div class="loading-overlay" id="loading-overlay">
+    <div class="spinner"></div>
+  </div>
+
+  <!-- ═══ SCRIPTS ═══ -->
+  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+  <script src="https://unpkg.com/leaflet.markercluster@1.5.3/dist/leaflet.markercluster.js"></script>
+  <script src="js/config.js"></script>
+  <script src="js/aro-scoring.js"></script>
+  <script src="js/deal-score.js"></script>
+  <script src="js/parcel-api.js"></script>
+  <script src="js/filters.js"></script>
+  <script src="js/map-engine.js"></script>
+  <script src="js/export.js"></script>
+  <script src="js/yield-calculator.js"></script>
+  <script src="js/cost-estimator.js"></script>
+  <script src="js/pro-forma.js"></script>
+  <script src="js/tab3.js"></script>
+  <script src="js/deal-snapshot.js"></script>
+  <script src="js/ic-memo.js"></script>
+  <script src="js/scenarios.js"></script>
+  <script src="js/underwrite.js"></script>
+  <script src="js/criteria.js"></script>
+  <script src="js/parser.js"></script>
+  <script src="js/ui-utils.js"></script>
+  <script src="js/sponsor-fit.js"></script>
+  <script src="js/timeline.js"></script>
+  <script src="js/next-action.js"></script>
+  <script src="js/internal-comps.js"></script>
+  <script src="js/demo-mode.js"></script>
+  <script src="data/ai-recommended-properties.js"></script>
+  <script src="js/ai-prospects.js"></script>
+
+  <script>
+    // ─── Tab Management ───
+    let mapInitialized = false;
+
+    function switchTab(tabId) {
+      // Update buttons
+      document.querySelectorAll('.tab-btn').forEach(btn => btn.classList.remove('active'));
+      document.querySelector(`.tab-btn[data-tab="${tabId}"]`).classList.add('active');
+
+      // Update content
+      document.querySelectorAll('.tab-content').forEach(tab => tab.classList.remove('active'));
+      document.getElementById('tab-' + tabId).classList.add('active');
+
+      // Initialize map on first view
+      if (tabId === 'map' && !mapInitialized) {
+        mapInitialized = true;
+        setTimeout(() => {
+          MapEngine.init();
+          Filters.init();
+        }, 100);
+      }
+
+      // Re-render prospecting list + AI prospects
+      if (tabId === 'prospecting') {
+        ExportModule.renderProspectingList();
+        AIProspects.init();
+      }
+
+      // Initialize feasibility tab listeners on first view
+      if (tabId === 'feasibility') {
+        FeasibilityTab.init();
+      }
+
+      // Fix map size if switching to map tab
+      if (tabId === 'map' && mapInitialized) {
+        setTimeout(() => {
+          const m = MapEngine.getMap();
+          if (m) m.invalidateSize();
+        }, 100);
+      }
+    }
+
+    // ─── Single Property Screener ───
+    function analyzeProperty() {
+      const data = getFormData();
+
+      if (!data.yearBuilt) {
+        alert('Please enter the Year Built to analyze ARO eligibility.');
+        return;
+      }
+
+      const eligibility = AROScoring.getEligibility(
+        parseInt(data.yearBuilt),
+        data.useType,
+        data.neighborhood
+      );
+
+      const scoring = AROScoring.calculateScore(data);
+      const angles = AROScoring.getDealAngles(data, eligibility);
+      const pathways = AROScoring.getFinancingPathways(data);
+      const notes = AROScoring.getFinancingNotes(data);
+
+      renderResults(data, eligibility, scoring, angles, pathways, notes);
+    }
+
+    function getFormData() {
+      return {
+        address: document.getElementById('input-address').value,
+        neighborhood: document.getElementById('input-neighborhood').value,
+        zoning: document.getElementById('input-zoning').value,
+        yearBuilt: document.getElementById('input-year-built').value,
+        buildingSF: document.getElementById('input-sf').value,
+        useType: document.getElementById('input-use-type').value,
+        stories: document.getElementById('input-stories').value,
+        vacancyRate: document.getElementById('input-vacancy').value,
+        estimatedValue: document.getElementById('input-value').value,
+        floorplateShape: document.getElementById('input-floorplate').value,
+        historicDesignation: document.getElementById('input-historic').value,
+        affordableStrategy: document.getElementById('input-affordable').value,
+        notes: document.getElementById('input-notes').value
+      };
+    }
+
+    function renderResults(data, eligibility, scoring, angles, pathways, notes) {
+      document.getElementById('empty-state').style.display = 'none';
+      const container = document.getElementById('results-content');
+      container.style.display = 'block';
+
+      const sfFormatted = data.buildingSF ? parseInt(data.buildingSF).toLocaleString() + ' SF' : '';
+      const valueFormatted = data.estimatedValue ? '$' + parseInt(data.estimatedValue).toLocaleString() : '';
+      const scoreColor = AROScoring.getScoreColor(scoring.score);
+
+      let html = '';
+
+      // 0. Commercial Lending Solutions Deal Score (partial — Tab 1 has limited data)
+      if (typeof DealScore !== 'undefined') {
+        const ds = DealScore.computeDealScore({
+          aro: { eligibility: eligibility.status },
+          physical: { totalScore: scoring.score }, // use opportunity score as proxy
+          yieldBase: 0,
+          costs: { costPerUnitMid: 0 },
+          proforma: { returnOnCost: 0 },
+          subsidyGap: { subsidyPerUnit: 0 }
+        });
+        const dsColor = DealScore.bandColor(ds.band);
+        html += `<div class="deal-score-display ${dsColor}" style="text-align:center;padding:20px;margin-bottom:16px;border-radius:12px;background:var(--${dsColor}-bg);border:2px solid var(--${dsColor});">
+          <div style="font-family:'DM Mono',monospace;font-size:0.68rem;letter-spacing:0.1em;text-transform:uppercase;color:var(--${dsColor});font-weight:700;">${BRAND.firmName} Deal Score</div>
+          <div style="font-family:'Playfair Display',serif;font-size:2.4rem;font-weight:800;color:var(--${dsColor});">${ds.score} <span style="font-size:1rem;color:var(--mid);">/ 100</span></div>
+          <div style="font-family:'DM Mono',monospace;font-size:0.88rem;font-weight:700;color:var(--${dsColor});">Band ${ds.band}</div>
+          <div style="font-size:0.85rem;color:var(--slate);margin-top:4px;">${ds.commentary}</div>
+          <div style="font-size:0.72rem;color:var(--mid);margin-top:4px;font-style:italic;">Partial score — run Conversion Feasibility for full analysis</div>
+        </div>`;
+      }
+
+      // 1. Eligibility Badge
+      html += `
+        <div class="eligibility-badge ${eligibility.status}">
+          <div class="badge-verdict">${eligibility.verdict}</div>
+          <p class="badge-explanation">${eligibility.explanation}</p>
+        </div>
+      `;
+
+      // 2. Opportunity Score
+      html += `
+        <div class="score-section">
+          <div class="section-heading">Opportunity Score</div>
+          <div class="score-display">
+            <span class="score-number">${scoring.score}</span>
+            <span class="score-label">/ 100</span>
+          </div>
+          <div class="score-bar-wrap">
+            <div class="score-bar-fill ${scoreColor}" id="score-bar" style="width:0%"></div>
+          </div>
+          <div class="score-threshold" style="color:var(--${scoreColor})">
+            ${scoring.threshold.label} — ${scoring.threshold.desc}
+          </div>
+        </div>
+      `;
+
+      // 3. Factor Cards
+      html += '<div class="section-heading">Factor Analysis</div><div class="factors-grid">';
+      scoring.factors.forEach(f => {
+        html += `
+          <div class="factor-card ${f.sentiment}">
+            <div class="factor-label">${f.label}</div>
+            <div class="factor-value">${f.value} <span style="font-size:0.72rem;color:var(--mid);font-weight:400">+${f.points} pts</span></div>
+            <div class="factor-note">${f.note}</div>
+          </div>
+        `;
+      });
+      html += '</div>';
+
+      // 4. Broker Deal Angles
+      html += '<div class="section-heading">Broker Deal Angles</div><ul class="deal-angles-list">';
+      angles.forEach(a => {
+        html += `
+          <li class="deal-angle-item">
+            <div class="deal-angle-icon">${a.icon}</div>
+            <div>
+              <div class="deal-angle-title">${a.title}</div>
+              <div class="deal-angle-desc">${a.desc}</div>
+            </div>
+          </li>
+        `;
+      });
+      html += '</ul>';
+
+      // 5. Financing Pathways
+      html += '<div class="section-heading">Financing Pathways</div><div class="financing-grid">';
+      pathways.forEach(p => {
+        html += `
+          <div class="financing-card">
+            <div class="financing-title">${p.title}</div>
+            <div class="financing-detail">${p.detail}</div>
+            <div class="financing-desc">${p.desc}</div>
+          </div>
+        `;
+      });
+      html += '</div>';
+
+      // 6. Financing Notes
+      if (notes.length > 0) {
+        html += '<div class="financing-notes">';
+        notes.forEach(n => {
+          html += `<h4>${n.type === 'warning' ? '\u26A0\uFE0F' : '\u2139\uFE0F'} ${n.title}</h4><p>${n.text}</p>`;
+        });
+        html += '</div>';
+      }
+
+      // 7. CTA Row
+      html += `
+        <div class="cta-row">
+          <button class="btn-gold" onclick="exportCurrentDeal()">Export Deal Summary (.txt)</button>
+          <button class="btn-secondary" onclick="ExportModule.printReport()">Print Report</button>
+        </div>
+        <div style="margin-top:16px;text-align:center;">
+          <button class="btn-primary" style="width:auto;padding:12px 32px;" onclick="FeasibilityTab.prePopulateFromTab1()">Proceed to Conversion Feasibility &#x2192;</button>
+        </div>
+      `;
+
+      container.innerHTML = html;
+
+      // Animate score bar
+      setTimeout(() => {
+        const bar = document.getElementById('score-bar');
+        if (bar) bar.style.width = scoring.score + '%';
+      }, 100);
+
+      // Scroll to results on mobile
+      if (window.innerWidth <= 900) {
+        container.scrollIntoView({ behavior: 'smooth' });
+      }
+    }
+
+    function clearForm() {
+      document.getElementById('input-address').value = '';
+      document.getElementById('input-neighborhood').value = '';
+      document.getElementById('input-zoning').value = 'Unknown';
+      document.getElementById('input-year-built').value = '';
+      document.getElementById('input-sf').value = '';
+      document.getElementById('input-use-type').value = '';
+      document.getElementById('input-stories').value = '';
+      document.getElementById('input-vacancy').value = 'Unknown';
+      document.getElementById('input-value').value = '';
+      document.getElementById('input-floorplate').value = 'Unknown';
+      document.getElementById('input-historic').value = 'None';
+      document.getElementById('input-affordable').value = 'None-market rate only';
+      document.getElementById('input-notes').value = '';
+
+      document.getElementById('empty-state').style.display = '';
+      document.getElementById('results-content').style.display = 'none';
+    }
+
+    function exportCurrentDeal() {
+      const data = getFormData();
+      ExportModule.exportDealSummary(data);
+    }
+
+    // ─── Map Detail Panel Actions ───
+    function runFullAnalysis() {
+      const panel = document.getElementById('detail-panel');
+      if (!panel || !panel.dataset.parcelJson) return;
+
+      const parcel = JSON.parse(panel.dataset.parcelJson);
+
+      // Pre-populate Tab 1 form
+      document.getElementById('input-address').value = parcel.address || '';
+      document.getElementById('input-year-built').value = parcel.yearBuilt || '';
+      document.getElementById('input-sf').value = parcel.sqft || '';
+
+      // Try to map use description to form select
+      const useDesc = (parcel.useDescription || '').toLowerCase();
+      let useVal = '';
+      if (useDesc.includes('office')) useVal = 'Office-Low Rise 1-4fl';
+      else if (useDesc.includes('hotel') || useDesc.includes('motel')) useVal = 'Hotel';
+      else if (useDesc.includes('warehouse') || useDesc.includes('industrial')) useVal = 'Industrial/Warehouse';
+      else if (useDesc.includes('retail') || useDesc.includes('store') || useDesc.includes('shopping')) useVal = 'Retail/Strip Center';
+      else if (useDesc.includes('parking')) useVal = 'Parking Structure';
+      else if (useDesc.includes('mixed')) useVal = 'Mixed Use';
+      else useVal = 'Other Commercial';
+      document.getElementById('input-use-type').value = useVal;
+
+      MapEngine.closeDetailPanel();
+      switchTab('screener');
+    }
+
+    function runFeasibilityAnalysis() {
+      const panel = document.getElementById('detail-panel');
+      if (!panel || !panel.dataset.parcelJson) return;
+      const parcel = JSON.parse(panel.dataset.parcelJson);
+      MapEngine.closeDetailPanel();
+      FeasibilityTab.prePopulateFromParcel(parcel);
+    }
+
+    function addCurrentToProspecting() {
+      const panel = document.getElementById('detail-panel');
+      if (!panel || !panel.dataset.parcelJson) return;
+      const parcel = JSON.parse(panel.dataset.parcelJson);
+      ExportModule.addToProspectingList(parcel);
+    }
+
+    function confirmClearList() {
+      if (confirm('Clear all properties from your prospecting list?')) {
+        ExportModule.clearProspectingList();
+      }
+    }
+
+    // ─── Tooltip System ───
+    document.addEventListener('mouseover', function(e) {
+      const trigger = e.target.closest('.tooltip-trigger');
+      if (!trigger) return;
+
+      let box = document.getElementById('tooltip-box');
+      if (!box) {
+        box = document.createElement('div');
+        box.id = 'tooltip-box';
+        box.className = 'tooltip-box';
+        document.body.appendChild(box);
+      }
+
+      box.textContent = trigger.getAttribute('title');
+      trigger.dataset.originalTitle = trigger.getAttribute('title');
+      trigger.removeAttribute('title');
+
+      const rect = trigger.getBoundingClientRect();
+      box.style.left = rect.left + 'px';
+      box.style.top = (rect.bottom + 6) + 'px';
+      box.classList.add('visible');
+    });
+
+    document.addEventListener('mouseout', function(e) {
+      const trigger = e.target.closest('.tooltip-trigger');
+      if (!trigger) return;
+
+      if (trigger.dataset.originalTitle) {
+        trigger.setAttribute('title', trigger.dataset.originalTitle);
+        delete trigger.dataset.originalTitle;
+      }
+
+      const box = document.getElementById('tooltip-box');
+      if (box) box.classList.remove('visible');
+    });
+
+    // ─── Init ───
+    document.addEventListener('DOMContentLoaded', () => {
+      ExportModule.init();
+      if (typeof SponsorFit !== 'undefined') SponsorFit.initPanel();
+    });
+  </script>
+
+</body>
+</html>

@@ -1,0 +1,399 @@
+/* ═══ AI-Recommended Prospects — Commercial Lending Solutions ═══ */
+
+/* ─── Section Divider ─── */
+.ai-section-divider {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  margin: 40px 0 28px;
+}
+.ai-section-divider::before,
+.ai-section-divider::after {
+  content: '';
+  flex: 1;
+  height: 1px;
+  background: linear-gradient(to right, transparent, var(--gold), transparent);
+}
+.ai-section-divider .ai-label {
+  font-family: 'DM Mono', monospace;
+  font-size: 0.7rem;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--gold);
+  white-space: nowrap;
+  padding: 4px 14px;
+  border: 1px solid var(--gold);
+  border-radius: 20px;
+}
+
+/* ─── Section Header ─── */
+.ai-prospects-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  margin-bottom: 24px;
+  gap: 16px;
+  flex-wrap: wrap;
+}
+.ai-prospects-header h2 {
+  font-family: 'Playfair Display', serif;
+  font-size: 1.4rem;
+  margin: 0 0 4px;
+}
+.ai-prospects-header p {
+  color: var(--mid);
+  font-size: 0.82rem;
+  margin: 0;
+}
+
+/* ─── Strategy Presets ─── */
+.strategy-presets {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-bottom: 20px;
+}
+.preset-btn {
+  font-family: 'DM Mono', monospace;
+  font-size: 0.72rem;
+  letter-spacing: 0.04em;
+  padding: 6px 16px;
+  border-radius: 20px;
+  border: 1px solid rgba(13,13,13,0.15);
+  background: white;
+  color: var(--ink);
+  cursor: pointer;
+  transition: all 0.2s;
+  white-space: nowrap;
+}
+.preset-btn:hover {
+  border-color: var(--gold);
+  color: var(--gold);
+}
+.preset-btn.active {
+  background: var(--ink);
+  color: var(--paper);
+  border-color: var(--ink);
+}
+
+/* ─── Advanced Weights Panel ─── */
+.weights-toggle {
+  font-family: 'DM Mono', monospace;
+  font-size: 0.72rem;
+  color: var(--mid);
+  cursor: pointer;
+  background: none;
+  border: none;
+  padding: 4px 0;
+  margin-bottom: 8px;
+  letter-spacing: 0.04em;
+  transition: color 0.2s;
+}
+.weights-toggle:hover {
+  color: var(--gold);
+}
+.weights-panel {
+  display: none;
+  background: var(--cream);
+  border-radius: var(--radius-md, 8px);
+  padding: 20px 24px;
+  margin-bottom: 24px;
+}
+.weights-panel.open {
+  display: block;
+}
+.weight-row {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 12px;
+}
+.weight-row:last-child {
+  margin-bottom: 0;
+}
+.weight-label {
+  font-family: 'DM Mono', monospace;
+  font-size: 0.72rem;
+  width: 90px;
+  flex-shrink: 0;
+  color: var(--ink);
+}
+.weight-slider {
+  -webkit-appearance: none;
+  appearance: none;
+  flex: 1;
+  height: 8px;
+  background: linear-gradient(to right, rgba(13,13,13,0.08), rgba(184,150,12,0.3));
+  border-radius: 4px;
+  outline: none;
+  cursor: pointer;
+}
+.weight-slider::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  width: 20px;
+  height: 20px;
+  background: var(--gold);
+  border: 3px solid white;
+  border-radius: 50%;
+  box-shadow: 0 2px 6px rgba(13,13,13,0.2);
+  cursor: pointer;
+  transition: transform 0.15s, box-shadow 0.15s;
+}
+.weight-slider::-webkit-slider-thumb:hover {
+  transform: scale(1.15);
+  box-shadow: 0 3px 8px rgba(13,13,13,0.25);
+}
+.weight-slider::-moz-range-thumb {
+  width: 20px;
+  height: 20px;
+  background: var(--gold);
+  border: 3px solid white;
+  border-radius: 50%;
+  box-shadow: 0 2px 6px rgba(13,13,13,0.2);
+  cursor: pointer;
+}
+.weight-value {
+  font-family: 'DM Mono', monospace;
+  font-size: 0.72rem;
+  width: 36px;
+  text-align: right;
+  color: var(--gold);
+  flex-shrink: 0;
+}
+
+/* ─── Results Meta ─── */
+.ai-results-meta {
+  font-family: 'DM Mono', monospace;
+  font-size: 0.7rem;
+  color: var(--mid);
+  margin-bottom: 16px;
+  letter-spacing: 0.03em;
+}
+
+/* ─── Property Cards ─── */
+.ai-card {
+  background: white;
+  border-left: 4px solid var(--gold);
+  border-radius: var(--radius-md, 8px);
+  box-shadow: var(--shadow-sm);
+  padding: 20px 24px;
+  margin-bottom: 16px;
+  transition: box-shadow 0.2s;
+}
+.ai-card:hover {
+  box-shadow: var(--shadow-md);
+}
+
+.ai-card-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  margin-bottom: 4px;
+  gap: 12px;
+}
+.ai-card-address {
+  font-family: 'Playfair Display', serif;
+  font-size: 1.05rem;
+  font-weight: 600;
+  color: var(--ink);
+}
+.ai-card-score {
+  font-family: 'Playfair Display', serif;
+  font-size: 2.4rem;
+  font-weight: 700;
+  line-height: 1;
+  color: var(--ink);
+  flex-shrink: 0;
+}
+.ai-card-score small {
+  font-size: 0.9rem;
+  color: var(--mid);
+  font-weight: 400;
+}
+.ai-card-meta {
+  font-family: 'DM Mono', monospace;
+  font-size: 0.72rem;
+  color: var(--mid);
+  margin-bottom: 12px;
+  letter-spacing: 0.02em;
+}
+
+/* Score Bar */
+.ai-score-bar-track {
+  height: 10px;
+  background: rgba(13,13,13,0.06);
+  border-radius: 5px;
+  overflow: hidden;
+  margin-bottom: 20px;
+}
+.ai-score-bar-fill {
+  height: 100%;
+  border-radius: 5px;
+  width: 0;
+  transition: width 0.8s cubic-bezier(0.4,0,0.2,1);
+}
+.ai-score-bar-fill.eligible { background: var(--eligible); }
+.ai-score-bar-fill.conditional { background: var(--conditional); }
+.ai-score-bar-fill.ineligible { background: var(--ineligible); }
+
+.ai-score-label {
+  font-family: 'DM Mono', monospace;
+  font-size: 0.68rem;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  margin-top: 4px;
+  display: inline-block;
+}
+
+/* Factor Breakdown Grid */
+.ai-factor-title {
+  font-family: 'DM Mono', monospace;
+  font-size: 0.68rem;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--mid);
+  margin-bottom: 10px;
+}
+.ai-factor-grid {
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  gap: 6px;
+  margin-bottom: 20px;
+}
+.ai-factor-cell {
+  background: var(--cream);
+  border-radius: 6px;
+  padding: 8px 6px;
+  text-align: center;
+}
+.ai-factor-cell-label {
+  font-family: 'DM Mono', monospace;
+  font-size: 0.62rem;
+  letter-spacing: 0.04em;
+  color: var(--mid);
+  margin-bottom: 4px;
+  text-transform: uppercase;
+}
+.ai-factor-cell-pts {
+  font-family: 'Playfair Display', serif;
+  font-size: 0.95rem;
+  font-weight: 700;
+  color: var(--ink);
+}
+.ai-factor-cell-weight {
+  font-family: 'DM Mono', monospace;
+  font-size: 0.58rem;
+  color: var(--gold);
+  margin-top: 2px;
+}
+.ai-factor-cell-result {
+  font-family: 'DM Mono', monospace;
+  font-size: 0.62rem;
+  color: var(--ink);
+  margin-top: 2px;
+  font-weight: 600;
+}
+
+/* Why This Property */
+.ai-narrative-title {
+  font-family: 'DM Mono', monospace;
+  font-size: 0.68rem;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--mid);
+  margin-bottom: 8px;
+}
+.ai-narrative {
+  background: var(--cream);
+  border-left: 3px solid var(--gold);
+  border-radius: 0 6px 6px 0;
+  padding: 14px 18px;
+  font-size: 0.85rem;
+  line-height: 1.6;
+  color: var(--ink);
+  margin-bottom: 20px;
+}
+
+/* Deal Angles */
+.ai-angles-title {
+  font-family: 'DM Mono', monospace;
+  font-size: 0.68rem;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--mid);
+  margin-bottom: 8px;
+}
+.ai-angle {
+  font-size: 0.82rem;
+  margin-bottom: 4px;
+  color: var(--ink);
+}
+
+/* Action Buttons */
+.ai-card-actions {
+  display: flex;
+  gap: 10px;
+  margin-top: 16px;
+  padding-top: 16px;
+  border-top: 1px solid rgba(13,13,13,0.06);
+}
+.ai-card-actions .btn-gold,
+.ai-card-actions .btn-outline {
+  font-size: 0.75rem;
+  padding: 8px 18px;
+  width: auto;
+}
+
+/* Show More */
+.ai-show-more {
+  text-align: center;
+  margin-top: 20px;
+}
+.ai-show-more button {
+  font-family: 'DM Mono', monospace;
+  font-size: 0.75rem;
+  letter-spacing: 0.04em;
+  padding: 10px 32px;
+  border-radius: 20px;
+  border: 1px solid var(--gold);
+  background: transparent;
+  color: var(--gold);
+  cursor: pointer;
+  transition: all 0.2s;
+}
+.ai-show-more button:hover {
+  background: var(--gold);
+  color: white;
+}
+
+/* ─── Responsive ─── */
+@media (max-width: 900px) {
+  .ai-factor-grid {
+    grid-template-columns: repeat(3, 1fr);
+  }
+  .ai-card-header {
+    flex-direction: column;
+  }
+  .ai-card-score {
+    font-size: 2rem;
+  }
+}
+@media (max-width: 600px) {
+  .ai-factor-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+  .strategy-presets {
+    flex-direction: column;
+  }
+  .ai-card {
+    padding: 16px;
+  }
+  .ai-card-actions {
+    flex-direction: column;
+  }
+  .ai-card-actions .btn-gold,
+  .ai-card-actions .btn-outline {
+    width: 100%;
+    text-align: center;
+  }
+}

@@ -1,0 +1,26 @@
+{
+  "eligible_primary": [
+    "Office Building",
+    "Commercial",
+    "Retail Store",
+    "Supermarket",
+    "Bank",
+    "Restaurant",
+    "Hotel/Motel",
+    "Warehouse",
+    "Industrial",
+    "Parking"
+  ],
+  "eligible_codes": [
+    "0100", "0101", "0102",
+    "1700", "1701",
+    "1800", "1801",
+    "1900",
+    "2100", "2101", "2102",
+    "2700", "2701", "2702",
+    "3100", "3200", "3201"
+  ],
+  "conditional_note": "Buildings 5-14 years old require ZA approval",
+  "ineligible": ["Single Family", "Condo", "Duplex", "Vacant Land"],
+  "downtown_separate": "Downtown LA uses Downtown Community Plan ARO"
+}
