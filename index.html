@@ -233,7 +233,7 @@
   <header class="app-header">
     <div class="header-top">
       <div class="brand">
-        <h1><span>Commercial Lending Solutions</span> — LA Adaptive Reuse Identifier</h1>
+        <h1><span>ARO Conversion Engine</span> — by Commercial Lending Solutions</h1>
         <span class="subtitle">Your Capital. Our Relationships. Every Deal.</span>
       </div>
       <div style="display:flex;align-items:center;gap:10px;">
@@ -269,6 +269,9 @@
       <span class="stat-label">Estimated new homes possible citywide</span>
     </div>
   </div>
+
+  <!-- ═══ LIVE RATE BAR ═══ -->
+  <div id="live-rate-bar"></div>
 
   <!-- ═══ TAB 1: SINGLE PROPERTY SCREENER ═══ -->
   <div id="tab-screener" class="tab-content">
@@ -691,12 +694,12 @@
               <input type="number" id="m1-f2f" placeholder="e.g. 12" step="0.5">
             </div>
             <div class="m-form-group">
-              <label>Number of Stories</label>
-              <input type="number" id="m1-stories" placeholder="e.g. 8" min="1">
+              <label class="required-label">Number of Stories</label>
+              <input type="number" id="m1-stories" placeholder="e.g. 8" min="1" required>
             </div>
             <div class="m-form-group">
-              <label>Total Building SF</label>
-              <input type="number" id="m1-total-sf" placeholder="e.g. 85000">
+              <label class="required-label">Total Building SF</label>
+              <input type="number" id="m1-total-sf" placeholder="e.g. 85000" required>
             </div>
             <div class="m-form-group">
               <label>Typical Floor SF <span class="tooltip-trigger" title="Used to estimate core size and usable residential area per floor.">?</span></label>
@@ -962,12 +965,12 @@
               <input type="number" id="m4-acquisition" placeholder="e.g. 12000000">
             </div>
             <div class="m-form-group">
-              <label>Projected Rent — Studio ($/mo)</label>
-              <input type="number" id="m4-studio-rent" placeholder="e.g. 2200" value="2200">
+              <label class="required-label">Projected Rent — Studio ($/mo)</label>
+              <input type="number" id="m4-studio-rent" placeholder="e.g. 2200" value="2200" required>
             </div>
             <div class="m-form-group">
-              <label>Projected Rent — 1BR ($/mo)</label>
-              <input type="number" id="m4-1br-rent" placeholder="e.g. 2800" value="2800">
+              <label class="required-label">Projected Rent — 1BR ($/mo)</label>
+              <input type="number" id="m4-1br-rent" placeholder="e.g. 2800" value="2800" required>
             </div>
             <div class="m-form-group">
               <label>Projected Rent — 2BR ($/mo)</label>
@@ -1285,6 +1288,7 @@
   <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
   <script src="https://unpkg.com/leaflet.markercluster@1.5.3/dist/leaflet.markercluster.js"></script>
   <script src="js/config.js"></script>
+  <script src="js/live-rates.js"></script>
   <script src="js/aro-scoring.js"></script>
   <script src="js/deal-score.js"></script>
   <script src="js/parcel-api.js"></script>
@@ -1666,6 +1670,7 @@
     document.addEventListener('DOMContentLoaded', () => {
       ExportModule.init();
       if (typeof SponsorFit !== 'undefined') SponsorFit.initPanel();
+      if (typeof LiveRates !== 'undefined') LiveRates.init();
 
       // Check if already authenticated
       if (localStorage.getItem(SPLASH_KEY) === SPLASH_HASH) {
@@ -1673,6 +1678,12 @@
       }
     });
   </script>
+
+  <!-- ═══ CTA BUTTON ═══ -->
+  <a id="aro-cta" class="aro-cta-btn" href="https://calendly.com/commerciallendingsolutions" target="_blank" rel="noopener">
+    Schedule an ARO Strategy Session
+    <button class="aro-cta-dismiss" onclick="event.preventDefault();event.stopPropagation();document.getElementById('aro-cta').style.display='none';" title="Dismiss">&times;</button>
+  </a>
 
 </body>
 </html>

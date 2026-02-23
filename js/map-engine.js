@@ -11,6 +11,7 @@ const MapEngine = (() => {
   let debounceTimer = null;
   let currentParcels = [];
   let isLoading = false;
+  let suppressReload = false;
 
   const LA_CENTER = [34.0522, -118.2437];
   const INITIAL_ZOOM = 11;
@@ -111,6 +112,7 @@ const MapEngine = (() => {
   }
 
   function onMapMove() {
+    if (suppressReload) return;
     if (debounceTimer) clearTimeout(debounceTimer);
     debounceTimer = setTimeout(() => {
       loadParcels();
@@ -331,7 +333,11 @@ const MapEngine = (() => {
 
   function zoomToParcel(lat, lng) {
     if (!map) return;
+    suppressReload = true;
+    if (debounceTimer) clearTimeout(debounceTimer);
     map.flyTo([lat, lng], 16, { duration: 0.8 });
+    // flyTo fires moveend/zoomend multiple times during animation — suppress for duration + buffer
+    setTimeout(() => { suppressReload = false; }, 1500);
   }
 
   function updatePropertyList(parcels) {

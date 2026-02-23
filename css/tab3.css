@@ -1,6 +1,31 @@
 /* ═══ TAB 3: Conversion Feasibility Analyzer ═══ */
 /* Commercial Lending Solutions Design System — extends theme.css */
 
+/* ─── Required Field Indicators ─── */
+.required-label::after {
+  content: ' *';
+  color: var(--ineligible);
+  font-weight: 700;
+}
+
+.validation-msg {
+  background: var(--ineligible-bg);
+  border: 1px solid rgba(180,40,40,0.2);
+  border-radius: var(--radius-md);
+  padding: 10px 14px;
+  margin: 10px 0;
+  font-size: 0.82rem;
+  color: var(--ineligible);
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.validation-msg-icon {
+  font-size: 1rem;
+  flex-shrink: 0;
+}
+
 /* ─── Tab 3 Layout ─── */
 .feasibility-container {
   max-width: 1100px;

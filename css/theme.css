@@ -1906,6 +1906,153 @@ code, .mono {
 .nba-icon { cursor: help; }
 .nba-icon:hover { transform: scale(1.2); }
 
+/* ═══ LIVE RATE BAR ═══ */
+#live-rate-bar {
+  background: #1a1a2e;
+  border-bottom: 1px solid rgba(77,159,255,0.15);
+  overflow: hidden;
+}
+
+.rate-bar-inner {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  padding: 6px 24px;
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+.rate-bar-status {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  flex-shrink: 0;
+}
+
+.rate-dot-live {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: var(--eligible);
+  animation: ratePulse 2s ease-in-out infinite;
+}
+
+.rate-dot-fallback {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: var(--conditional);
+}
+
+@keyframes ratePulse {
+  0%, 100% { opacity: 1; box-shadow: 0 0 0 0 rgba(5,150,105,0.4); }
+  50% { opacity: 0.7; box-shadow: 0 0 0 4px rgba(5,150,105,0); }
+}
+
+.rate-bar-status-label {
+  font-family: 'DM Mono', monospace;
+  font-size: 0.62rem;
+  font-weight: 700;
+  letter-spacing: 0.1em;
+  color: rgba(255,255,255,0.5);
+}
+
+.rate-bar-items {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  overflow-x: auto;
+  flex: 1;
+}
+
+.rate-bar-item {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  white-space: nowrap;
+}
+
+.rate-bar-item.derived {
+  opacity: 0.7;
+}
+
+.rate-bar-label {
+  font-family: 'DM Mono', monospace;
+  font-size: 0.62rem;
+  font-weight: 500;
+  letter-spacing: 0.06em;
+  color: rgba(255,255,255,0.45);
+}
+
+.rate-bar-value {
+  font-family: 'DM Mono', monospace;
+  font-size: 0.72rem;
+  font-weight: 700;
+  color: #4ade80;
+}
+
+.rate-bar-sep {
+  font-size: 0.62rem;
+  color: rgba(255,255,255,0.15);
+}
+
+@media (max-width: 700px) {
+  .rate-bar-inner { padding: 6px 12px; gap: 8px; }
+  .rate-bar-item.derived { display: none; }
+}
+
+/* ═══ CTA BUTTON ═══ */
+.aro-cta-btn {
+  position: fixed;
+  bottom: 24px;
+  right: 24px;
+  z-index: 900;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 12px 20px;
+  font-family: 'DM Sans', sans-serif;
+  font-size: 0.82rem;
+  font-weight: 700;
+  color: #ffffff;
+  background: linear-gradient(135deg, #0066cc 0%, #0052a3 100%);
+  border: 2px solid rgba(77,159,255,0.3);
+  border-radius: 30px;
+  cursor: pointer;
+  box-shadow: 0 4px 20px rgba(0,102,204,0.3);
+  transition: all 0.25s ease;
+  text-decoration: none;
+}
+
+.aro-cta-btn:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 28px rgba(0,102,204,0.4);
+  border-color: rgba(77,159,255,0.6);
+}
+
+.aro-cta-dismiss {
+  background: none;
+  border: none;
+  color: rgba(255,255,255,0.5);
+  font-size: 1rem;
+  cursor: pointer;
+  padding: 0 0 0 4px;
+  line-height: 1;
+}
+
+.aro-cta-dismiss:hover {
+  color: #ffffff;
+}
+
+@media (max-width: 600px) {
+  .aro-cta-btn {
+    bottom: 12px;
+    right: 12px;
+    font-size: 0.75rem;
+    padding: 10px 16px;
+  }
+}
+
 /* ─── Phase 7: Sponsor Profile Panel ─── */
 .sponsor-panel-content .m-form-grid {
   display: grid;

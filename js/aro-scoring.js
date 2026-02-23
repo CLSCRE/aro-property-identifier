@@ -234,16 +234,19 @@ const AROScoring = (() => {
     const hasHistoric = historic !== 'None' && historic !== 'Unknown';
 
     // Always include these
+    const constrRate = typeof LiveRates !== 'undefined' ? LiveRates.getConstructionLoanRate().toFixed(2) + '%' : 'Float + 2.5\u20133.5%';
+    const bridgeRate = typeof LiveRates !== 'undefined' ? LiveRates.getHTCBridgeRate().toFixed(2) + '%+' : '8\u201312%';
+
     pathways.push({
       title: 'Construction / Perm Bridge',
-      detail: '65\u201370% LTC  |  Float + 2.5\u20133.5%',
+      detail: '65\u201370% LTC  |  ' + constrRate,
       desc: 'Bank or credit union construction-to-permanent loan. Best for well-capitalized sponsors with track record. 12\u201324 month construction draw period, converting to 5\u20137 year mini-perm.'
     });
 
     pathways.push({
       title: 'Debt Fund / Bridge Loan',
       detail: '12\u201336mo IO  |  70\u201380% LTC',
-      desc: 'Non-bank bridge lender for faster execution. Higher cost of capital (8\u201312%) but accommodates transitional assets, lighter documentation, and value-add business plans.'
+      desc: 'Non-bank bridge lender for faster execution. Higher cost of capital (' + bridgeRate + ') but accommodates transitional assets, lighter documentation, and value-add business plans.'
     });
 
     pathways.push({

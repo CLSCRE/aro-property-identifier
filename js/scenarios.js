@@ -71,7 +71,7 @@ const ScenarioEngine = (() => {
       vacancyRate: inputs.vacancyRate || 5,
       opexRatio: inputs.opexRatio || 40,
       exitCapRate: inputs.exitCapRate,
-      constructionLoanRate: inputs.constructionLoanRate || 7.5,
+      constructionLoanRate: inputs.constructionLoanRate || (typeof LiveRates !== 'undefined' ? LiveRates.getConstructionLoanRate() : 7.5),
       loanStructure: inputs.loanStructure || '65% LTC',
       retainedSF: inputs.retainedSF || 0
     };
@@ -120,7 +120,7 @@ const ScenarioEngine = (() => {
       vacancyRate: parseFloat(document.getElementById('m4-vacancy').value) || 5,
       opexRatio: parseFloat(document.getElementById('m4-opex').value) || 40,
       exitCapRate: parseFloat(document.getElementById('m4-cap-rate').value) || 5.5,
-      constructionLoanRate: parseFloat(document.getElementById('m4-loan-rate').value) || 7.5,
+      constructionLoanRate: parseFloat(document.getElementById('m4-loan-rate').value) || (typeof LiveRates !== 'undefined' ? LiveRates.getConstructionLoanRate() : 7.5),
       loanStructure: document.getElementById('m4-loan-structure').value
     };
   }

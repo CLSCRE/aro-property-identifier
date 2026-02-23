@@ -53,6 +53,35 @@ const FeasibilityTab = (() => {
     }
   }
 
+  function moduleHasRequiredInputs(num) {
+    const card = document.getElementById('module-' + num);
+    if (!card) return true;
+    const requiredInputs = card.querySelectorAll('input[required], select[required]');
+    const missing = [];
+    requiredInputs.forEach(input => {
+      if (!input.value || input.value === '0') {
+        const label = input.closest('.m-form-group, .form-group');
+        const labelEl = label ? label.querySelector('label') : null;
+        missing.push(labelEl ? labelEl.textContent.replace(' *', '').replace(' ?', '').trim() : input.id);
+      }
+    });
+    if (missing.length > 0) {
+      // Remove old validation message
+      const old = card.querySelector('.validation-msg');
+      if (old) old.remove();
+      const msg = document.createElement('div');
+      msg.className = 'validation-msg';
+      msg.innerHTML = '<span class="validation-msg-icon">&#9888;</span> Required fields missing: ' + missing.join(', ');
+      const body = card.querySelector('.module-body');
+      if (body) body.prepend(msg);
+      return false;
+    }
+    // Clear any existing validation message
+    const old = card.querySelector('.validation-msg');
+    if (old) old.remove();
+    return true;
+  }
+
   function completeModule(num) {
     modules[num].completed = true;
     const card = document.getElementById('module-' + num);
@@ -675,6 +704,7 @@ const FeasibilityTab = (() => {
   }
 
   function onModule1Complete() {
+    if (!moduleHasRequiredInputs(1)) return;
     if (!physicalResult) { calculatePhysical(); }
     if (!physicalResult) return;
 
@@ -1055,7 +1085,7 @@ const FeasibilityTab = (() => {
       vacancyRate: parseFloat(document.getElementById('m4-vacancy').value) || 5,
       opexRatio: parseFloat(document.getElementById('m4-opex').value) || 40,
       exitCapRate: parseFloat(document.getElementById('m4-cap-rate').value) || 5.5,
-      constructionLoanRate: parseFloat(document.getElementById('m4-loan-rate').value) || 7.5,
+      constructionLoanRate: parseFloat(document.getElementById('m4-loan-rate').value) || (typeof LiveRates !== 'undefined' ? LiveRates.getConstructionLoanRate() : 7.5),
       loanStructure: document.getElementById('m4-loan-structure').value,
       conversionType: convType,
       retainedSF: getRetainedSF()
@@ -1295,6 +1325,7 @@ const FeasibilityTab = (() => {
   }
 
   function onModule4Complete() {
+    if (!moduleHasRequiredInputs(4)) return;
     if (!proFormaResult) calculateProForma();
     if (!proFormaResult) return;
     completeModule(4);
@@ -1948,6 +1979,7 @@ const FeasibilityTab = (() => {
     <div class="report-footer">
       <div class="report-footer-brand"><span>${BRAND.firmName}</span> — ${BRAND.tagline}</div>
       <div class="report-footer-sub">${BRAND.productName} — Conversion Feasibility Report</div>
+      <div class="report-footer-sub" style="margin-top:4px;font-size:0.72rem;color:var(--mid);">Sister product: <strong>${BRAND.sisterProduct}</strong></div>
       <div class="report-version">${BRAND.productVersion} — Generated ${new Date().toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' })} at ${new Date().toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit' })}</div>
       <div class="report-disclaimer">${BRAND.disclaimerFull}</div>
     </div>`;

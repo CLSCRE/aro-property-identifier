@@ -39,7 +39,7 @@ const ProForma = (() => {
     const vacancyRate = parseFloat(params.vacancyRate) || 5;
     const opexRatio = parseFloat(params.opexRatio) || 40;
     const exitCapRate = parseFloat(params.exitCapRate) || 5.5;
-    const constructionLoanRate = parseFloat(params.constructionLoanRate) || 7.5;
+    const constructionLoanRate = parseFloat(params.constructionLoanRate) || (typeof LiveRates !== 'undefined' ? LiveRates.getConstructionLoanRate() : 7.5);
     const loanStructure = params.loanStructure || '65% LTC';
 
     // Use base case unit counts
@@ -113,7 +113,8 @@ const ProForma = (() => {
       totalHTCEquity = federalHTC + stateHTC;
       // HTC bridge loan: 90% of anticipated equity, ~8% rate over 24-month construction
       htcBridgeLoan = Math.round(totalHTCEquity * 0.90);
-      htcBridgeCost = Math.round(htcBridgeLoan * 0.08 * 2); // 2 years of interest
+      const htcBridgeRate = typeof LiveRates !== 'undefined' ? LiveRates.getHTCBridgeRate() / 100 : 0.08;
+      htcBridgeCost = Math.round(htcBridgeLoan * htcBridgeRate * 2); // 2 years of interest
       netHTCEquity = totalHTCEquity - htcBridgeCost;
     }
 

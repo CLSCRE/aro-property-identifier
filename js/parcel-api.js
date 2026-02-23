@@ -197,12 +197,26 @@ const ParcelAPI = (() => {
       });
   }
 
+  // Seeded PRNG for deterministic sample data
+  function seededRandom(seed) {
+    let s = seed;
+    return function() {
+      s = (s * 16807 + 0) % 2147483647;
+      return (s - 1) / 2147483646;
+    };
+  }
+
   // Sample data generator for when APIs are unavailable
+  // Uses seeded random so the same map view always produces the same properties
   function generateSampleParcels(bounds, filters) {
     const south = bounds.getSouth();
     const north = bounds.getNorth();
     const west = bounds.getWest();
     const east = bounds.getEast();
+
+    // Create a seed from the rounded bounds so nearby views get the same data
+    const seedVal = Math.abs(Math.round(south * 100) * 73856093 ^ Math.round(west * 100) * 19349663 ^ Math.round(north * 100) * 83492791 ^ Math.round(east * 100) * 45678901);
+    const rng = seededRandom(seedVal || 1);
 
     const sampleProperties = [
       { use: 'Office Building', minAge: 25, maxAge: 65, minSF: 15000, maxSF: 180000 },
@@ -227,20 +241,21 @@ const ParcelAPI = (() => {
     ];
 
     const parcels = [];
-    const count = Math.min(120, Math.max(30, Math.floor(Math.random() * 80) + 40));
+    const count = Math.min(120, Math.max(30, Math.floor(rng() * 80) + 40));
 
     for (let i = 0; i < count; i++) {
-      const template = sampleProperties[Math.floor(Math.random() * sampleProperties.length)];
-      const lat = south + Math.random() * (north - south);
-      const lng = west + Math.random() * (east - west);
-      const age = template.minAge + Math.floor(Math.random() * (template.maxAge - template.minAge));
+      const template = sampleProperties[Math.floor(rng() * sampleProperties.length)];
+      const lat = south + rng() * (north - south);
+      const lng = west + rng() * (east - west);
+      const age = template.minAge + Math.floor(rng() * (template.maxAge - template.minAge));
       const yearBuilt = AROScoring.CURRENT_YEAR - age;
-      const sqft = template.minSF + Math.floor(Math.random() * (template.maxSF - template.minSF));
-      const streetNum = 100 + Math.floor(Math.random() * 9900);
-      const street = streetNames[Math.floor(Math.random() * streetNames.length)];
+      const sqft = template.minSF + Math.floor(rng() * (template.maxSF - template.minSF));
+      const streetNum = 100 + Math.floor(rng() * 9900);
+      const street = streetNames[Math.floor(rng() * streetNames.length)];
+      const ainNum = 4000000000 + Math.floor(rng() * 999999999);
 
       const parcel = {
-        ain: String(4000000000 + Math.floor(Math.random() * 999999999)),
+        ain: String(ainNum),
         address: `${streetNum} ${street}`,
         useDescription: template.use,
         yearBuilt,
@@ -248,7 +263,7 @@ const ParcelAPI = (() => {
         lat,
         lng,
         raw: {
-          ain: String(4000000000 + Math.floor(Math.random() * 999999999)),
+          ain: String(ainNum),
           usedescription: template.use,
           effectiveyearbuilt: String(yearBuilt),
           sqftmain: String(sqft)
